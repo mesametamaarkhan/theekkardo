@@ -64,8 +64,8 @@
 
 ### Clone the Repository
 ```sh
- git clone https://github.com/yourusername/vehicle-assist.git
- cd vehicle-assist
+ git clone https://github.com/mesametamaarkhan/theekkardo
+ cd theekkardo
 ```
 
 ### Backend Setup
