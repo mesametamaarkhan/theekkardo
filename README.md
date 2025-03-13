@@ -1,4 +1,4 @@
-# 🚗 Vehicle Assist - Mechanic Finder & Roadside Assistance
+# 🚗 TheekKarDo - Mechanic Finder & Roadside Assistance
 
 ## 📌 Overview
 **Vehicle Assist** is a web-based application that connects vehicle owners with nearby mechanics and service providers in real-time. The platform helps users request emergency repairs, car washes, and general maintenance services at their location. It features GPS tracking, service scheduling, secure payments, and a rating system to ensure quality service.
