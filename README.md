@@ -1,7 +1,7 @@
 # 🚗 TheekKarDo - Mechanic Finder & Roadside Assistance
 
 ## 📌 Overview
-**Vehicle Assist** is a web-based application that connects vehicle owners with nearby mechanics and service providers in real-time. The platform helps users request emergency repairs, car washes, and general maintenance services at their location. It features GPS tracking, service scheduling, secure payments, and a rating system to ensure quality service.
+**TheekKarDo** is a web-based application that connects vehicle owners with nearby mechanics and service providers in real-time. The platform helps users request emergency repairs, car washes, and general maintenance services at their location. It features GPS tracking, service scheduling, secure payments, and a rating system to ensure quality service.
 
 ## 🚀 Features
 ### User & Mechanic Management
@@ -45,11 +45,11 @@
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend:** React.js
+- **Frontend:** React.js, TailwindCSS
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB
 - **Authentication:** JWT-based authentication
-- **Real-Time Communication:** WebSockets (Socket.io)
+- **Real-Time Communication:** Firebase
 - **Maps & Location Services:** Google Maps API
 - **Payment Integration:** Stripe/PayPal (TBD)
 
