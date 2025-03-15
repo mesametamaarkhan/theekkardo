@@ -14,6 +14,8 @@ router.post('/signup', async (req, res) => {
         return res.status(400).json({ message: 'Some required fields are missing!!' });
     }
 
+    
+
     const { role, email, password, fullName, phone } = req.body;
 
     try {
@@ -25,7 +27,7 @@ router.post('/signup', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
         
-        const verified = false;
+        let verified = false;
         if(role === "user" || role === "admin" ) {
             verified = true;
         }
@@ -50,6 +52,7 @@ router.post('/signup', async (req, res) => {
 //route for user login (generates auth token and stores in http-only cookie)
 router.post('/login', async (req, res) => {
     if(!req.body.email || !req.body.password) {
+        console.log('a');
         return res.status(400).json({ message: 'Some required fields are missing' });
     }
 
@@ -58,7 +61,7 @@ router.post('/login', async (req, res) => {
     try {
         const existingUser = await User.findOne({ email });
         if(!existingUser) {
-            return res.status(404).json({ message: 'User doesnot exist.' });
+            return res.status(404).json({ message: 'User does not exist.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, existingUser.passwordHash);
