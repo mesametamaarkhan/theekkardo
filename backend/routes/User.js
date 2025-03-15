@@ -24,13 +24,19 @@ router.post('/signup', async (req, res) => {
 
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
+        
+        const verified = false;
+        if(role === "user" || role === "admin" ) {
+            verified = true;
+        }
 
         const newUser = new User({
             role,
             fullName,
             email,
             passwordHash,
-            phone
+            phone,
+            verified
         });
 
         await newUser.save();
@@ -151,20 +157,138 @@ router.put('/reset-password', authenticateToken, async (req, res) => {
     }
 });
 
+//get user profile
+router.get('/profile', authenticateToken, async (req, res) => {
+    const { email } = req.user;
+
+    try {
+        const user = await User.findOne({ email }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+        if(!user) {
+            return res.status(404).json({ message: 'User does not exist' });
+        }
+
+        res.status(200).json({ user });
+    }   
+    catch(error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
 //update user profile
+router.put('/update-profile', authenticateToken, async (req, res) => {
+    if(!req.body.fullName || !req.body.phone) {
+        return res.status(400).json({ message: 'Some required fields are missing' });
+    }
+
+    const { fullName, phone } = req.body;
+    const { email } = req.user;
+    
+    try {
+        const existingUser = await User.findOne({ email });
+        if(!existingUser) {
+            return res.status(404).json({ message: 'User does not exist' });
+        }
+
+        if(phone && phone !== existingUser.phone) {
+            const phoneExists = await User.findOne({ phone });
+            if(phoneExists) {
+                return res.status(400).json({ message: 'Phone number already in use' });
+            }
+        }
+
+        if(fullName) {
+            existingUser.fullName = fullName;
+        }
+
+        if(phone) {
+            existingUser.phone = phone;
+        }
+
+        await existingUser.save();
+        res.status(200).json({ message: 'Profile updated successfully', user: {
+            fullName: existingUser.fullName,
+            profileImage: existingUser.profileImage,
+            email: existingUser.email,
+            phone: existingUser.phone,
+            role: existingUser.role,
+            status: existingUser.status,
+            rating: existingUser.rating,
+            verified: existingUser.verified
+        }});
+    }
+    catch(error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+//update user vehicles
+router.put('/update-vehicles', authenticateToken, async (req, res) => {
+    if(!req.body.vehicles) {
+        return res.status(400).json({ message: 'Some required fields are missing!' });
+    }
+
+    const { vehicles } = req.body;
+    const { email } = req.user;
+
+    try {
+        const existingUser = await User.findOneAndUpdate({ email }, { $set: { vehicles } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+        if(!existingUser) {
+            return res.status(404).json({ message: 'User does not exist!' });
+        }
+
+        res.status(200).json({ message: 'Vehicles updated', user: existingUser });
+    }
+    catch(error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
 //add profile-picture
 router.put('/update-profile-picture', authenticateToken,  async (req, res) => {
+    if(!req.body.profileImage) {
+        return res.status(400).json({ message: 'Some required fields are missing!' });
+    }
 
+    const { profileImage } = req.body;
+    const { email } = req.user;
+
+    try {
+        const existingUser = await User.findOneAndUpdate({ email }, { $set: { profileImage } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+        if(!existingUser) {
+            return res.status(404).json({ message: 'User does not exist!' });
+        }
+
+        res.status(200).json({ message: 'Profile Picture updated', user: existingUser });
+    }
+    catch(error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 });
 
-//update user-rating
-router.put('/update-rating', authenticateToken, async (req, res) => {
-
+//TODO: update user-rating
+router.put('/update-rating/:mechanicId', authenticateToken, async (req, res) => {
+    //get all ratings for a specific mechanic from review model
+    //calculate avg rating
+    //update mechanic being reviewed
 });
 
-//update user-location
-router.put('/update-location', authenticateToken, async (req, res) => {
+//update mechanic verification status
+//make this an admin only route 
+router.put('/verify-mechanic/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
 
+    try {
+        const mechanic = await User.findByIdAndUpdate(id, { $set: { verified: true }}, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+        if(!mechanic) {
+            return res.status(404).json({ message: 'Mechanic does not exist' });
+        }
+
+        res.status(200).json({ message: 'Mechanic verified successfully', mechanic });
+    }   
+    catch(error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 });
+
 
 export default router;
