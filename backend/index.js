@@ -9,8 +9,8 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173', // ✅ React frontend URL
-    credentials: true // ✅ Allows frontend to receive cookies
+    origin: 'http://localhost:5173', 
+    credentials: true 
 }));
 
 app.use('/user', UserRoutes);

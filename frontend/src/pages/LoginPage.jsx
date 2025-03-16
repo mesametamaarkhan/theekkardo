@@ -20,6 +20,7 @@ const LoginPage = () => {
             const res = await axios.post('http://localhost:5000/user/login', { email, password }, { withCredentials: true });
 
             if(res.status === 200) {
+                sessionStorage.setItem('isLoggedIn', 'true');
                 alert('Login Successful');
                 window.location.href = '/';
             }
