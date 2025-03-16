@@ -52,7 +52,6 @@ router.post('/signup', async (req, res) => {
 //route for user login (generates auth token and stores in http-only cookie)
 router.post('/login', async (req, res) => {
     if(!req.body.email || !req.body.password) {
-        console.log('a');
         return res.status(400).json({ message: 'Some required fields are missing' });
     }
 
@@ -78,8 +77,9 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         res.cookie('authToken', token, {
+            path: '/',
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: process.env.NODE_ENV === "production" ? true : false,
             sameSite: 'Strict',
             maxAge: 7 * 24 * 60 * 60 * 1000 
         });
@@ -94,9 +94,11 @@ router.post('/login', async (req, res) => {
 //route for user logout (remove authToken from cookie)
 router.post('/logout', async (req, res) => {
     res.clearCookie('authToken', {
+        domain: 'localhost',
+        path: '/',
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Strict'
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        sameSite: 'Strict',
     });
     res.status(200).json({ message: 'User logged out successfully' });
 });
