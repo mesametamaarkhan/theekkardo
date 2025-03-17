@@ -68,24 +68,19 @@ router.post('/verify', async (req, res) => {
         if(!existingUser || !existingUser.otp || !existingUser.otpExpiry) {
             return res.status(400).json({ message: 'Invalid OTP request' });
         }
-        console.log('a');
 
         if(Date.now() > existingUser.otpExpiry) {
             return res.status(400).json({ message: 'OTP has expired' });
         }
-        console.log('b');
-        console.log(existingUser);
 
         if(existingUser.otp !== otp) {
             return res.status(400).json({ message: 'Invalid OTP' });
         }
-        console.log('c');
 
         existingUser.otp = null;
         existingUser.otpExpiry = null;
         await existingUser.save();
 
-        console.log('d');
         res.status(200).json({ message: 'OTP verified successfully' });
     }
     catch(error) {
