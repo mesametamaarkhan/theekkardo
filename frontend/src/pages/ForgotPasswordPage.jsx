@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 
 const ForgotPasswordPage = () => {
@@ -9,17 +10,18 @@ const ForgotPasswordPage = () => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
     const otpRefs = useRef([]);
 
     const handleOtpChange = (index, value) => {
         if (value.length <= 1) {
-        const newOtp = [...otp];
-        newOtp[index] = value;
-        setOtp(newOtp);
+            const newOtp = [...otp];
+            newOtp[index] = value;
+            setOtp(newOtp);
         
-        if (value && index < 5) {
-            otpRefs.current[index + 1]?.focus();
-        }
+            if (value && index < 5) {
+                otpRefs.current[index + 1]?.focus();
+            }
         }
     };
 
@@ -29,9 +31,34 @@ const ForgotPasswordPage = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setStep(step + 1);
+
+        try {
+            if (step === 1) {
+                const res = await axios.post('http://localhost:5000/otp/generate', { email });
+                if (res.status === 200) setStep(2);
+            } 
+            else if (step === 2) {
+                console.log(otp.join(''));
+                const res = await axios.post('http://localhost:5000/otp/verify', { email, otp: otp.join('') });
+                if (res.status === 200) setStep(3);
+            }
+            else if (step === 3) {
+                if (newPassword !== confirmPassword) {
+                    setError("Passwords do not match.");
+                    return;
+                }
+                const res = await axios.put('http://localhost:5000/user/reset-password', { email, newPassword });
+                if (res.status === 200) {
+                    alert('Password reset successfully! Redirecting to login.');
+                    window.location.href = '/login'; 
+                }
+            }
+        }
+        catch(err) {
+            setError(err.response?.data?.message || "Something went wrong.");
+        }
     };
 
     return (

@@ -18,10 +18,12 @@ const transporter = nodemailer.createTransport({
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 //generate otp
-router.post('/generate', authenticateToken, async (req, res) => {
-    //generate otp and send to email or phone
-    //also send it as part of response
-    const { email } = req.user;
+router.post('/generate', async (req, res) => {
+    if(!req.body.email) {
+        return res.status(400).json({ message: 'Email required' });
+    }
+
+    const { email } = req.body;
     try {
         const existingUser = await User.findOne({ email });
         if(!existingUser) {
@@ -46,9 +48,7 @@ router.post('/generate', authenticateToken, async (req, res) => {
             });
         }
 
-        //also do for phone using twilio
-
-        res.status(200).json({ message: 'OTP sent successfully', otp }); //remove for production
+        res.status(200).json({ message: 'OTP sent successfully', otp }); //remove otp object for production
     }
     catch(error) {
         return res.status(500).json({ message: 'Server error', error });
@@ -56,32 +56,36 @@ router.post('/generate', authenticateToken, async (req, res) => {
 });
 
 //verify otp
-router.post('/verify', authenticateToken, async (req, res) => {
-    if(!req.body.otp) {
+router.post('/verify', async (req, res) => {
+    if(!req.body.otp || !req.body.email) {
         return res.status(400).json({ message: 'OTP is required!' });
     }
 
-    const { otp } = req.body;
-    const { email } = req.user;
+    const { otp, email } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
         if(!existingUser || !existingUser.otp || !existingUser.otpExpiry) {
             return res.status(400).json({ message: 'Invalid OTP request' });
         }
+        console.log('a');
 
         if(Date.now() > existingUser.otpExpiry) {
             return res.status(400).json({ message: 'OTP has expired' });
         }
+        console.log('b');
+        console.log(existingUser);
 
         if(existingUser.otp !== otp) {
             return res.status(400).json({ message: 'Invalid OTP' });
         }
+        console.log('c');
 
         existingUser.otp = null;
         existingUser.otpExpiry = null;
         await existingUser.save();
 
+        console.log('d');
         res.status(200).json({ message: 'OTP verified successfully' });
     }
     catch(error) {

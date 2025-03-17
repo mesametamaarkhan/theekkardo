@@ -136,13 +136,12 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 });
 
 //reset-password
-router.put('/reset-password', authenticateToken, async (req, res) => {
-    if(!req.body.newPassword) {
+router.put('/reset-password', async (req, res) => {
+    if(!req.body.newPassword || !req.body.email) {
         return res.status(400).json({ message: "Some required fields are missing!" });
     }
 
-    const { newPassword } = req.body;
-    const { email } = req.user;
+    const { email, newPassword } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
