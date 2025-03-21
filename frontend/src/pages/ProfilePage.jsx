@@ -195,29 +195,39 @@ const ProfilePage = () => {
     };
     
 
-    //TODO:
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        
-            setImageLoading(true);
-            try {
-                // Simulate API call for image upload
-                await new Promise(resolve => setTimeout(resolve, 1000));
+        if (!file) return;
+    
+        setImageLoading(true);
+    
+        const formData = new FormData();
+        formData.append('profileImage', file);
+    
+        try {
+            const res = await axios.put(
+                'http://localhost:5000/user/update-profile-picture',
+                formData,
+                {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    withCredentials: true,
+                }
+            );
+    
+            if (res.status === 200) {
                 toast.success('Profile picture updated successfully!');
-            } catch (error) {
-                toast.error('Failed to update profile picture');
-                setImagePreview(null);
-            } finally {
-                setImageLoading(false);
+                setProfile(prevProfile => ({
+                    ...prevProfile,
+                    profileImage: res.data.user.profileImage
+                }));
             }
+        } catch (error) {
+            toast.error('Failed to upload profile picture');
+        } finally {
+            setImageLoading(false);
         }
-    };    
+    };
+       
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

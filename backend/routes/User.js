@@ -2,11 +2,15 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import multer from 'multer';
+import cloudinary from '../config/cloudinaryConfig.js';
 import authenticateToken from '../middleware/AuthenticateToken.js';
 import { User } from '../models/User.js';
 
 dotenv.config();
 const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 //route for user signup
 router.post('/signup', async (req, res) => {
@@ -267,23 +271,36 @@ router.put('/remove-vehicle', authenticateToken, async (req, res) => {
 });
 
 //add profile-picture
-router.put('/update-profile-picture', authenticateToken,  async (req, res) => {
-    if(!req.body.profileImage) {
-        return res.status(400).json({ message: 'Some required fields are missing!' });
-    }
-
-    const { profileImage } = req.body;
-    const { email } = req.user;
-
+router.put('/update-profile-picture', authenticateToken, upload.single('profileImage'),  async (req, res) => {
     try {
-        const existingUser = await User.findOneAndUpdate({ email }, { $set: { profileImage } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
-        if(!existingUser) {
-            return res.status(404).json({ message: 'User does not exist!' });
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
         }
 
-        res.status(200).json({ message: 'Profile Picture updated', user: existingUser });
-    }
-    catch(error) {
+        const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'profile_pictures' },
+                (error, result) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    else {
+                        resolve(result);
+                    }
+                }
+            );
+            stream.end(req.file.buffer);
+        });
+
+        const updatedUser = await User.findOneAndUpdate({ email: req.user.email }, { profileImage: result.secure_url }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'Profile image updated', user: updatedUser });
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
