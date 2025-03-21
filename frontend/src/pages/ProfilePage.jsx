@@ -57,6 +57,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
+            console.log('a');
             try {
                 const res = await axios.get('http://localhost:5000/user/profile', { withCredentials: true });
                 if(res.status === 200) {
@@ -64,17 +65,19 @@ const ProfilePage = () => {
                 }
             }
             catch(err) {
-                setError(err.message);
+                if (err.response && err.response.status === 403) {
+                    toast.error('Access denied');
+                    navigate('/login'); 
+                } else {
+                    setError(err.message);
+                }
             }
-
-            
         };
 
         fetchProfile();
     }, []);
 
 
-    //done
     const handleProfileUpdate = async () => {
         setLoading(true);
         try {
@@ -94,7 +97,6 @@ const ProfilePage = () => {
         }
     };
 
-    //done
     const handlePasswordUpdate = async () => {
         if (passwords.new !== passwords.confirm) {
             toast.error('New passwords do not match');
@@ -118,7 +120,6 @@ const ProfilePage = () => {
         }
     };
 
-    //done
     const handleLogout = async () => {
         try {
             const res = await axios.post('http://localhost:5000/user/logout', {}, { withCredentials: true });
@@ -141,7 +142,6 @@ const ProfilePage = () => {
         setShowAddVehicle(true);
     };
 
-    //done
     const handleSubmitVehicle = async (e) => {
         e.preventDefault();
     
@@ -172,7 +172,6 @@ const ProfilePage = () => {
         }
     };
     
-    //done
     const handleDeleteVehicle = async (id) => {
         setLoading(true);
         try {
@@ -194,7 +193,6 @@ const ProfilePage = () => {
         }
     };
     
-
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
