@@ -141,47 +141,59 @@ const ProfilePage = () => {
         setShowAddVehicle(true);
     };
 
-    //TODO:
+    //done
     const handleSubmitVehicle = async (e) => {
         e.preventDefault();
-        
-        // Basic validation
-        if (!newVehicle.make || !newVehicle.model || !newVehicle.year || !newVehicle.plate) {
-        toast.error('Please fill in all fields');
-        return;
+    
+        if (!newVehicle.make || !newVehicle.model || !newVehicle.year || !newVehicle.plateNumber) {
+            console.log(newVehicle);
+            toast.error('Please fill in all fields');
+            return;
         }
-
+    
         setLoading(true);
         try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // const vehicle = {
-        //     id: vehicles.length + 1,
-        //     ...newVehicle
-        // };
-        
-        // setVehicles([...vehicles, vehicle]);
-        setNewVehicle({
-            make: '',
-            model: '',
-            year: new Date().getFullYear(),
-            plate: ''
-        });
-        setShowAddVehicle(false);
-        toast.success('Vehicle added successfully');
-        } catch (error) {
-        toast.error('Failed to add vehicle');
+            const res = await axios.put('http://localhost:5000/user/update-vehicles', { vehicles: [...profile.vehicles, newVehicle] }, { withCredentials: true });
+    
+            if (res.status === 200) {
+                toast.success('Vehicle added successfully');
+                setProfile((prevProfile) => ({
+                    ...prevProfile,
+                    vehicles: [...prevProfile.vehicles, newVehicle]
+                }));
+                setNewVehicle({ make: '', model: '', year: '', plateNumber: '' });
+                setShowAddVehicle(false);
+            }
+        } 
+        catch (error) {
+            toast.error('Failed to add vehicle');
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
-
-    //TODO: 
-    const handleDeleteVehicle = (id) => {
-        // setVehicles(vehicles.filter(v => v.id !== id));
-        toast.success('Vehicle removed successfully');
+    
+    //done
+    const handleDeleteVehicle = async (id) => {
+        setLoading(true);
+        try {
+            const res = await axios.put('http://localhost:5000/user/remove-vehicle', { id }, { withCredentials: true });
+    
+            if (res.status === 200) {
+                toast.success('Vehicle removed successfully');
+                setProfile((prevProfile) => ({
+                    ...prevProfile,
+                    vehicles: prevProfile.vehicles.filter(vehicle => vehicle._id !== id)
+                }));
+            }
+        } 
+        catch (error) {
+            toast.error('Failed to remove vehicle');
+        } 
+        finally {
+            setLoading(false);
+        }
     };
+    
 
     //TODO:
     const handleImageChange = async (e) => {
@@ -205,9 +217,7 @@ const ProfilePage = () => {
                 setImageLoading(false);
             }
         }
-    };
-
-    
+    };    
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -366,7 +376,7 @@ const ProfilePage = () => {
                         <div className="grid gap-4">
                         {profile.vehicles.map((vehicle) => (
                             <div
-                                key={vehicle.plateNumber}
+                                key={vehicle._id}
                                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                             >
                                 <div className="flex items-center space-x-4">
@@ -382,7 +392,7 @@ const ProfilePage = () => {
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <button
-                                        onClick={() => handleDeleteVehicle(vehicle.id)}
+                                        onClick={() => handleDeleteVehicle(vehicle._id)}
                                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                     >
                                         <Trash2 size={18} />
@@ -464,8 +474,8 @@ const ProfilePage = () => {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    value={newVehicle.plate}
-                                                    onChange={(e) => setNewVehicle({ ...newVehicle, plate: e.target.value.toUpperCase() })}
+                                                    value={newVehicle.plateNumber}
+                                                    onChange={(e) => setNewVehicle({ ...newVehicle, plateNumber: e.target.value.toUpperCase() })}
                                                     placeholder="e.g., ABC 123"
                                                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase"
                                                 />

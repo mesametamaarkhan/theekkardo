@@ -247,6 +247,25 @@ router.put('/update-vehicles', authenticateToken, async (req, res) => {
     }
 });
 
+//remove user vehicle
+router.put('/remove-vehicle', authenticateToken, async (req, res) => {
+    const { id } = req.body;
+    const { email } = req.user;
+
+    try {
+        const existingUser = await User.findOneAndUpdate({ email },{ $pull: { vehicles: { _id: id } } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+
+        if (!existingUser) {
+            return res.status(404).json({ message: 'User does not exist!' });
+        }
+
+        res.status(200).json({ message: 'Vehicle removed successfully', user: existingUser });
+    } 
+    catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
 //add profile-picture
 router.put('/update-profile-picture', authenticateToken,  async (req, res) => {
     if(!req.body.profileImage) {
@@ -269,13 +288,6 @@ router.put('/update-profile-picture', authenticateToken,  async (req, res) => {
     }
 });
 
-//TODO: update user-rating
-router.put('/update-rating/:mechanicId', authenticateToken, async (req, res) => {
-    //get all ratings for a specific mechanic from review model
-    //calculate avg rating
-    //update mechanic being reviewed
-});
-
 //update mechanic verification status
 //make this an admin only route 
 router.put('/verify-mechanic/:id', authenticateToken, async (req, res) => {
@@ -293,6 +305,5 @@ router.put('/verify-mechanic/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 });
-
 
 export default router;
