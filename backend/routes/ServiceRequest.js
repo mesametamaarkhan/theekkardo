@@ -167,7 +167,7 @@ router.get('/bids/:serviceRequestId', authenticateToken, async (req, res) => {
             .populate({
                 path: 'mechanicId',
                 model: 'user',
-                select: 'fullName'
+                select: 'fullName rating profileImage verified'
             });
 
         res.status(200).json({ bids });
