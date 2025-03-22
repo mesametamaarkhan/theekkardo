@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ProfilePage from './pages/ProfilePage';
+import BidsPage from './pages/BidsPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/bids/:requestId" element={<BidsPage />} />
         </Routes>
       <Footer />
     </div>
