@@ -57,7 +57,6 @@ const ProfilePage = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            console.log('a');
             try {
                 const res = await axios.get('http://localhost:5000/user/profile', { withCredentials: true });
                 if(res.status === 200) {

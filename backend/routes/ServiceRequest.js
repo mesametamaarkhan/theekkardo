@@ -27,6 +27,7 @@ router.post('/', authenticateToken, async (req, res) => {
         res.status(200).json({ message: 'Service request created successfully', serviceRequest });
     }
     catch(error) {
+        console.log(error);
         res.status(500).json({ message: 'Server error', error });
     }
 });
@@ -162,15 +163,25 @@ router.post('/place-bid', authenticateToken, async (req, res) => {
 router.get('/bids/:serviceRequestId', authenticateToken, async (req, res) => {
     const { serviceRequestId } = req.params;
     try {
-        console.log(serviceRequestId);
+        const serviceRequest = await ServiceRequest.findById(serviceRequestId)
+            .populate('serviceId')
+            .populate({
+                path: 'mechanicId',
+                model: 'user',
+                select: 'fullName rating profileImage verified'
+            });
+        if(!serviceRequest) {
+            return res.status(404).json({ message: 'Service Request not found' });
+        }
+
         const bids = await Bid.find({ serviceRequestId })
             .populate({
                 path: 'mechanicId',
                 model: 'user',
                 select: 'fullName rating profileImage verified'
             });
-
-        res.status(200).json({ bids });
+        
+        res.status(200).json({ bids, serviceRequest });
     }
     catch(error) {
         console.log(error);
