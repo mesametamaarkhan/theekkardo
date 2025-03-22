@@ -2,7 +2,6 @@ import express from 'express';
 //other import go here
 import authenticateToken from '../middleware/AuthenticateToken.js';
 import { ServiceRequest } from '../models/ServiceRequest.js';
-import { User } from '../models/User.js';
 import { Bid } from '../models/Bid.js';
 
 const router = express.Router();
@@ -10,7 +9,6 @@ const router = express.Router();
 //creating a service request
 router.post('/', authenticateToken, async (req, res) => {
     if(!req.body.serviceId || !req.body.vehicle || !req.body.location || !req.body.issueDescription || !req.body.preferredTime) {
-        console.log(req.body);
         return res.status(400).json({ message: 'Some required fields are missing!' });
     }
 

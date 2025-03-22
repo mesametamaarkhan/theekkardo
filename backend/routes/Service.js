@@ -37,8 +37,6 @@ router.post('/', authenticateToken, upload.single("image"), async (req, res) => 
         let imageUrl = await uploadToCloudinary(req.file.buffer);
 
         const newService = new Service({ name, description, basePrice, image: imageUrl });
-
-        console.log(newService);
         await newService.save();
 
         res.status(200).json({ message: 'Service created successfully', service: newService });
