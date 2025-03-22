@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Shield, Clock, AlertCircle } from 'lucide-react';
+import axios from 'axios';
+import { MapPin, Shield, Clock, AlertCircle, Wrench, Battery, Car } from 'lucide-react';
 
 const LandingPage = () => {
+    const [services, setServices] = useState([]);
     const features = [
         {
         icon: <Clock className="w-8 h-8 text-blue-500" />,
@@ -42,6 +44,22 @@ const LandingPage = () => {
         }
     ];
 
+    useEffect(() => {
+        const getServices = () => {
+            axios.get('http://localhost:5000/service')
+                .then(response => {
+                    setServices(response.data.services);
+                })
+                .catch(error => {
+                    toast.error('Error fetching services');
+                    window.location.href('/login');
+                });
+        };
+
+        getServices();
+        console.log(services);
+    }, []);
+
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -78,6 +96,50 @@ const LandingPage = () => {
                                 className="rounded-lg shadow-xl"
                             />
                         </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Services Section */}
+            <section className="py-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Services</h2>
+                        <p className="text-gray-600 max-w-2xl mx-auto">
+                            Professional automotive services tailored to your needs. From emergency repairs to regular maintenance, we've got you covered.
+                        </p>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {services.map((service, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.2 }}
+                                className="relative group overflow-hidden rounded-xl"
+                            >
+                                <div className="absolute inset-0">
+                                    <img
+                                        src={service.image}
+                                        alt={service.title}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
+                                </div>
+                                <div className="relative p-8 h-[400px] flex flex-col">
+                                    <div className="flex-1">
+                                        <h3 className="text-2xl font-bold text-white mb-3">{service.title}</h3>
+                                        <p className="text-gray-200">{service.description}</p>
+                                    </div>
+                                    <Link
+                                        to="/request-service"
+                                        className="mt-6 inline-flex items-center justify-center px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:text-gray-900 transition-colors duration-200"
+                                    >
+                                        Request Service
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>

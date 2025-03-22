@@ -14,34 +14,40 @@ const upload = multer({ storage });
 //admin only route
 //posting services
 router.post('/', authenticateToken, upload.single("image"), async (req, res) => {
-    if(!req.body.name || !req.body.description || !req.body.basePrice || !req.file) {
+    if (!req.body.name || !req.body.description || !req.body.basePrice || !req.file) {
         return res.status(400).json({ message: 'Some required fields are missing' });
     }
 
     const { name, description, basePrice } = req.body;
+
     try {
-        let imageUrl = null;
-        if(req.file) {
-            const result = await cloudinary.uploader.upload_stream(
-                { folder: 'services' },
-                (error, result) => {
-                    if(error) {
-                        return res.status(500).json({ message: 'Image upload failed' });
+        const uploadToCloudinary = (fileBuffer) => {
+            return new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'services' },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result.secure_url);
                     }
-                    imageUrl = result.secure_url;
-                }
-            ).end(req.file.buffer);
-        }
+                );
+                stream.end(fileBuffer);
+            });
+        };
+
+        let imageUrl = await uploadToCloudinary(req.file.buffer);
 
         const newService = new Service({ name, description, basePrice, image: imageUrl });
 
+        console.log(newService);
         await newService.save();
+
         res.status(200).json({ message: 'Service created successfully', service: newService });
-    }
-    catch(error) {
+    } catch (error) {
+        console.error("❌ Server error:", error);
         res.status(500).json({ message: 'Server error', error });
     }
 });
+
 
 //get all services
 router.get('/', async (req, res) => {
@@ -50,7 +56,7 @@ router.get('/', async (req, res) => {
         res.status(200).json({ services });
     }
     catch(error) {
-        res.status(500).json({ message: 'Server error', services });
+        res.status(500).json({ message: 'Server error', error });
     }
 });
 
