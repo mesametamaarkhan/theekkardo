@@ -3,20 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
-import {
-    Camera,
-    Shield,
-    Star,
-    Car,
-    Plus,
-    Trash2,
-    Edit2,
-    CheckCircle2,
-    LogOut,
-    Loader2,
-    BadgeCheck,
-    X
-} from 'lucide-react';
+import { Camera, Shield, Star, Car, Plus, Trash2, Edit2, CheckCircle2, LogOut, Loader2, BadgeCheck, X } from 'lucide-react';
 import clsx from 'clsx';
 
 const ProfilePage = () => {
