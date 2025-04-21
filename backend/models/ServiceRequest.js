@@ -23,6 +23,8 @@ const serviceRequestSchema = new mongoose.Schema(
             default: "pending",
         },
         finalPrice: { type: Number },
+        isEmergency: { type: Boolean, default: false },
+        priority: { type: String, enum: ["low", "medium", "high"], default: "medium" },
     },
     { timestamps: true }
 );

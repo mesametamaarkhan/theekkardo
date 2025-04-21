@@ -59,11 +59,11 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 //get emergency requests by status
-router.get('/:status', authenticateToken, async (req, res) => {
+router.get('/status/:status', authenticateToken, async (req, res) => {
     const { status } = req.params;
 
     try {
-        const eRequests = await find({ status });
+        const eRequests = await EmergencyRequest.find({ status });
         if(!eRequests) {
             return res.status(404).json({ message: `No ${status} requests found!` });
         }    
@@ -90,11 +90,34 @@ router.put('/update-status/:id', authenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'Request not found!!' });
         }    
 
-        res.status(200).json({ message: 'Request status updated successfully' });
+        res.status(200).json({ message: 'Request status updated successfully', eRequest });
     } 
     catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
 });
+
+//assign-mechanic to emergency request
+router.put('/assign-mechanic/:id', authenticateToken, async (req, res) => {
+    if(!req.body.mechanicId) {
+        return res.status(400).json({ message: 'Some required fields are missing!!' });
+    }
+
+    const { mechanicId } = req.body;
+    const { id } = req.params;
+
+    try {
+        const eRequest = await EmergencyRequest.findByIdAndUpdate(id, { mechanicId }, { new: true });
+        if (!eRequest) {
+            return res.status(404).json({ message: "Request not found" });
+        }
+
+        res.status(200).json({ message: "Mechanic assigned", eRequest });
+    } 
+    catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
 
 export default router;

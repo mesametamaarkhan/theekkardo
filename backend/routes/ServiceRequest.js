@@ -228,5 +228,66 @@ router.put('/accept-bid/:bidId', authenticateToken, async (req, res) => {
     }
 });
 
+//create new emergency request
+router.post('/emergency', authenticateToken, async (req, res) => {
+    if (!req.body.serviceId || !req.body.vehicle || !req.body.location || !req.body.issueDescription) {
+        return res.status(400).json({ message: 'Some required fields are missing!' });
+    }
+
+    const { serviceId, vehicle, location, issueDescription } = req.body;
+
+    try {
+        const emergencyRequest = new ServiceRequest({
+            serviceId,
+            userId: req.user._id,
+            vehicle,
+            location,
+            issueDescription,
+            preferredTime: new Date(), // immediate
+            isEmergency: true,
+            status: 'pending',
+        });
+
+        await emergencyRequest.save();
+
+        res.status(200).json({ message: 'Emergency service request created successfully', emergencyRequest });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+//get all emergency requests
+router.get('/emergency/all', authenticateToken, async (req, res) => {
+    try {
+        const emergencyRequests = await ServiceRequest.find({ isEmergency: true })
+            .populate('serviceId')
+            .populate('userId', 'fullName phone location')
+            .populate('mechanicId', 'fullName phone');
+
+        res.status(200).json({ emergencyRequests });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+//get emergency requests with status pending
+router.get('/emergency/pending', authenticateToken, async (req, res) => {
+    try {
+        const emergencyRequests = await ServiceRequest.find({
+            isEmergency: true,
+            status: 'pending',
+        })
+        .populate('serviceId')
+        .populate('userId', 'fullName phone location');
+
+        res.status(200).json({ emergencyRequests });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
 
 export default router;
