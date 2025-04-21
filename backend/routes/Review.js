@@ -1,5 +1,4 @@
 import express from 'express';
-//other import go here
 import authenticateToken from '../middleware/AuthenticateToken.js';
 import { Review } from '../models/Review.js';
 

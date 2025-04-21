@@ -1,5 +1,4 @@
 import express from 'express';
-//other import go here
 import authenticateToken from '../middleware/AuthenticateToken.js';
 import { ServiceRequest } from '../models/ServiceRequest.js';
 import { Bid } from '../models/Bid.js';

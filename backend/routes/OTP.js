@@ -2,7 +2,6 @@ import express from 'express';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { User } from '../models/User.js';
-import authenticateToken from '../middleware/AuthenticateToken.js';
 
 dotenv.config();
 const router = express.Router();
