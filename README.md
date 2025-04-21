@@ -10,13 +10,13 @@
 
 ### Service Request System
 - Service Categories: Breakdown Repair, Car Wash, General Maintenance
-- Location-Based Requests (User selects current or custom location)
-- Service Details Form (Vehicle details, issue description, preferred time)
-- Real-Time Mechanic Availability (Show online mechanics nearby)
+- Location-Based Requests: User selects current location (Custom location coming soon)
+- Service Details Form: (Vehicle details, issue description, preferred time)
+- Real-Time Mechanic Availability: (Show online mechanics nearby)
 
 ### Real-Time Tracking & Communication
-- In-app Chat (Quick communication between user & mechanic)
-- Live GPS Tracking (Track mechanic’s location in real-time)
+- In-app Chat (Quick communication between user & mechanic) (Coming Soon)
+- Live GPS Tracking (Track mechanic’s location in real-time) (Coming Soon)
 
 ### Matching & Dispatch System
 - Auto-Assign Mechanic (Nearest available mechanic assigned automatically)
@@ -35,7 +35,7 @@
 
 ### Emergency & Safety Features
 - Emergency Priority Option (For urgent roadside breakdowns)
-- SOS Button (For immediate help if needed)
+- SOS Button (For immediate help if needed) (Coming Soon)
 
 ### Admin Dashboard
 - Mechanic Approval & Verification
@@ -72,14 +72,14 @@
 ```sh
  cd backend
  npm install
- npm start
+ npm run dev
 ```
 
 ### Frontend Setup
 ```sh
  cd frontend
  npm install
- npm start
+ npm run dev
 ```
 
 ---
@@ -91,7 +91,17 @@ PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-PAYMENT_GATEWAY_KEY=your_payment_gateway_api_key
+NODE_ENV=dev
+EMAIL_USER=your_email
+EMAIL_PASS=your_password_for_remote_login
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_secret_key
+```
+
+Create a `.env` file in the `frontend/` directory and add:
+```sh
+SERVER_URL=http://localhost:5000
 ```
 
 ---
@@ -100,9 +110,8 @@ PAYMENT_GATEWAY_KEY=your_payment_gateway_api_key
 1. **Sign up/Login** as a vehicle owner or mechanic.
 2. **Request a service** by selecting a category and location.
 3. **Get matched** with a nearby mechanic automatically or manually.
-4. **Communicate** via in-app chat and track in real-time.
-5. **Make secure payments** through various options.
-6. **Rate & Review** the service provider.
+4. **Communicate** via in-app chat and track in real-time. (Coming Soon)
+5. **Rate & Review** the service provider.
 
 ---
 
