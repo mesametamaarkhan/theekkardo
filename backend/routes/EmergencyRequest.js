@@ -96,7 +96,6 @@ router.put('/update-status/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Server error", error });
     }
 });
-
 //assign-mechanic to emergency request
 router.put('/assign-mechanic/:id', authenticateToken, async (req, res) => {
     if(!req.body.mechanicId) {
