@@ -289,5 +289,4 @@ router.get('/emergency/pending', authenticateToken, async (req, res) => {
     }
 });
 
-
 export default router;
