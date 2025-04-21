@@ -2,18 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import {
-    User,
-    Star,
-    Clock,
-    DollarSign,
-    CheckCircle,
-    XCircle,
-    MessageSquare,
-    Loader2,
-    ThumbsUp,
-    Calendar
-} from 'lucide-react';
+import { Star, CheckCircle, MessageSquare, Loader2, } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 const BidsPage = () => {

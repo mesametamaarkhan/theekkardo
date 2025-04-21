@@ -1,19 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-    Car,
-    MapPin,
-    Clock,
-    AlertTriangle,
-    PlayCircle,
-    CheckCircle,
-    Calendar,
-    Timer,
-    Loader2,
-    User,
-    Phone
-} from 'lucide-react';
+import { Car, MapPin, Clock, AlertTriangle, PlayCircle, CheckCircle, Calendar, Timer, Loader2, User, Phone } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import clsx from 'clsx';
 

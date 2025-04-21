@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    AlertTriangle,
-    Clock,
-    MapPin,
-    Car,
-    Loader2,
-    DollarSign,
-    X
-} from 'lucide-react';
+import { AlertTriangle, Clock, MapPin, Car, Loader2, DollarSign, X } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 const MechanicRequestsPage = () => {
