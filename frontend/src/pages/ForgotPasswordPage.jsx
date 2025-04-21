@@ -18,7 +18,7 @@ const ForgotPasswordPage = () => {
             const newOtp = [...otp];
             newOtp[index] = value;
             setOtp(newOtp);
-        
+
             if (value && index < 5) {
                 otpRefs.current[index + 1]?.focus();
             }
@@ -27,7 +27,7 @@ const ForgotPasswordPage = () => {
 
     const handleKeyDown = (index, e) => {
         if (e.key === 'Backspace' && !otp[index] && index > 0) {
-        otpRefs.current[index - 1]?.focus();
+            otpRefs.current[index - 1]?.focus();
         }
     };
 
@@ -38,7 +38,7 @@ const ForgotPasswordPage = () => {
             if (step === 1) {
                 const res = await axios.post('http://localhost:5000/otp/generate', { email });
                 if (res.status === 200) setStep(2);
-            } 
+            }
             else if (step === 2) {
                 console.log(otp.join(''));
                 const res = await axios.post('http://localhost:5000/otp/verify', { email, otp: otp.join('') });
@@ -52,11 +52,11 @@ const ForgotPasswordPage = () => {
                 const res = await axios.put('http://localhost:5000/user/reset-password', { email, newPassword });
                 if (res.status === 200) {
                     alert('Password reset successfully! Redirecting to login.');
-                    window.location.href = '/login'; 
+                    window.location.href = '/login';
                 }
             }
         }
-        catch(err) {
+        catch (err) {
             setError(err.response?.data?.message || "Something went wrong.");
         }
     };

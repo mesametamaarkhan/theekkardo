@@ -4,18 +4,18 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import {
-  Camera,
-  Shield,
-  Star,
-  Car,
-  Plus,
-  Trash2,
-  Edit2,
-  CheckCircle2,
-  LogOut,
-  Loader2,
-  BadgeCheck,
-  X
+    Camera,
+    Shield,
+    Star,
+    Car,
+    Plus,
+    Trash2,
+    Edit2,
+    CheckCircle2,
+    LogOut,
+    Loader2,
+    BadgeCheck,
+    X
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -30,7 +30,7 @@ const ProfilePage = () => {
     const [isOnline, setIsOnline] = useState(true);
     const [showAddVehicle, setShowAddVehicle] = useState(false);
     const [error, setError] = useState('');
-  
+
     const [profile, setProfile] = useState({
         fullName: '',
         email: '',
@@ -59,14 +59,14 @@ const ProfilePage = () => {
         const fetchProfile = async () => {
             try {
                 const res = await axios.get('http://localhost:5000/user/profile', { withCredentials: true });
-                if(res.status === 200) {
+                if (res.status === 200) {
                     setProfile(res.data.user);
                 }
             }
-            catch(err) {
+            catch (err) {
                 if (err.response && err.response.status === 403) {
                     toast.error('Access denied');
-                    navigate('/login'); 
+                    navigate('/login');
                 } else {
                     setError(err.message);
                 }
@@ -82,15 +82,15 @@ const ProfilePage = () => {
         try {
             // Simulate API call
             const res = await axios.put('http://localhost:5000/user/update-profile', { fullName: profile.fullName, phone: profile.phone }, { withCredentials: true });
-            
-            if(res.status === 200) {
+
+            if (res.status === 200) {
                 toast.success('Profile updated successfully!');
                 window.location.reload();
             }
-        } 
+        }
         catch (error) {
             toast.error('Failed to update profile');
-        } 
+        }
         finally {
             setLoading(false);
         }
@@ -105,15 +105,15 @@ const ProfilePage = () => {
 
         try {
             const res = await axios.put('http://localhost:5000/user/change-password', { currPassword: passwords.old, newPassword: passwords.new }, { withCredentials: true });
-            
-            if(res.status === 200) {
+
+            if (res.status === 200) {
                 toast.success('Profile updated successfully!');
                 window.location.reload();
             }
-        } 
+        }
         catch (error) {
             toast.error('Failed to update password');
-        } 
+        }
         finally {
             setLoading(false);
         }
@@ -123,13 +123,13 @@ const ProfilePage = () => {
         try {
             const res = await axios.post('http://localhost:5000/user/logout', {}, { withCredentials: true });
 
-            if(res.status === 200) {
+            if (res.status === 200) {
                 sessionStorage.setItem('isLoggedIn', 'false');
                 toast.success('Logout Successful');
                 window.location.href = '/login';
             }
         }
-        catch(err) {
+        catch (err) {
             toast.error(err.response?.data?.message || 'Logout Failed');
         }
         finally {
@@ -143,17 +143,17 @@ const ProfilePage = () => {
 
     const handleSubmitVehicle = async (e) => {
         e.preventDefault();
-    
+
         if (!newVehicle.make || !newVehicle.model || !newVehicle.year || !newVehicle.plateNumber) {
             console.log(newVehicle);
             toast.error('Please fill in all fields');
             return;
         }
-    
+
         setLoading(true);
         try {
             const res = await axios.put('http://localhost:5000/user/update-vehicles', { vehicles: [...profile.vehicles, newVehicle] }, { withCredentials: true });
-    
+
             if (res.status === 200) {
                 toast.success('Vehicle added successfully');
                 setProfile((prevProfile) => ({
@@ -163,19 +163,19 @@ const ProfilePage = () => {
                 setNewVehicle({ make: '', model: '', year: '', plateNumber: '' });
                 setShowAddVehicle(false);
             }
-        } 
+        }
         catch (error) {
             toast.error('Failed to add vehicle');
         } finally {
             setLoading(false);
         }
     };
-    
+
     const handleDeleteVehicle = async (id) => {
         setLoading(true);
         try {
             const res = await axios.put('http://localhost:5000/user/remove-vehicle', { id }, { withCredentials: true });
-    
+
             if (res.status === 200) {
                 toast.success('Vehicle removed successfully');
                 setProfile((prevProfile) => ({
@@ -183,24 +183,24 @@ const ProfilePage = () => {
                     vehicles: prevProfile.vehicles.filter(vehicle => vehicle._id !== id)
                 }));
             }
-        } 
+        }
         catch (error) {
             toast.error('Failed to remove vehicle');
-        } 
+        }
         finally {
             setLoading(false);
         }
     };
-    
+
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-    
+
         setImageLoading(true);
-    
+
         const formData = new FormData();
         formData.append('profileImage', file);
-    
+
         try {
             const res = await axios.put(
                 'http://localhost:5000/user/update-profile-picture',
@@ -210,7 +210,7 @@ const ProfilePage = () => {
                     withCredentials: true,
                 }
             );
-    
+
             if (res.status === 200) {
                 toast.success('Profile picture updated successfully!');
                 setProfile(prevProfile => ({
@@ -224,12 +224,12 @@ const ProfilePage = () => {
             setImageLoading(false);
         }
     };
-       
+
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <Toaster position="top-right" />
-        
+
             <div className="max-w-4xl mx-auto space-y-8">
                 {/* Profile Header */}
                 <motion.div
@@ -246,8 +246,8 @@ const ProfilePage = () => {
                                     className="w-24 h-24 rounded-full border-4 border-white object-cover"
                                 />
                                 <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                                 >
                                     {imageLoading ? (
                                         <Loader2 className="w-6 h-6 text-white animate-spin" />
@@ -265,7 +265,7 @@ const ProfilePage = () => {
                             />
                         </div>
                     </div>
-                
+
                     <div className="pt-16 pb-6 px-8">
                         <div className="flex flex-col space-y-4">
                             <div className="flex items-center justify-between">
@@ -292,27 +292,27 @@ const ProfilePage = () => {
                                     </button>
                                 </div>
                             </div>
-                        
+
                             <div className="flex items-center space-x-4">
                                 <p className="text-gray-600">{profile.role}</p>
                                 {profile.role === 'mechanic' && (
-                                <>
-                                    <div className="flex items-center space-x-2">
-                                        <Star className="w-5 h-5 text-yellow-400" />
-                                        <span className="font-semibold">{profile.rating}</span>
-                                    </div>
-                                    <button
-                                        onClick={() => setIsOnline(!isOnline)}
-                                        className={clsx(
-                                            'px-4 py-2 rounded-full font-medium transition-colors',
-                                            isOnline
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-gray-100 text-gray-800'
-                                        )}
-                                    >
-                                        {isOnline ? 'Online' : 'Offline'}
-                                    </button>
-                                </>
+                                    <>
+                                        <div className="flex items-center space-x-2">
+                                            <Star className="w-5 h-5 text-yellow-400" />
+                                            <span className="font-semibold">{profile.rating}</span>
+                                        </div>
+                                        <button
+                                            onClick={() => setIsOnline(!isOnline)}
+                                            className={clsx(
+                                                'px-4 py-2 rounded-full font-medium transition-colors',
+                                                isOnline
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-gray-100 text-gray-800'
+                                            )}
+                                        >
+                                            {isOnline ? 'Online' : 'Offline'}
+                                        </button>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -355,7 +355,7 @@ const ProfilePage = () => {
                                     ) : (
                                         <CheckCircle2 size={20} />
                                     )}
-                                <span>Save Changes</span>
+                                    <span>Save Changes</span>
                                 </button>
                             </div>
                         )}
@@ -381,32 +381,32 @@ const ProfilePage = () => {
                         </div>
 
                         <div className="grid gap-4">
-                        {profile.vehicles.map((vehicle) => (
-                            <div
-                                key={vehicle._id}
-                                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
-                            >
-                                <div className="flex items-center space-x-4">
-                                    <Car className="w-6 h-6 text-gray-400" />
-                                    <div>
-                                        <h3 className="font-medium">
-                                            {vehicle.make} {vehicle.model}
-                                        </h3>
-                                        <p className="text-sm text-gray-500">
-                                            {vehicle.year} • {vehicle.plateNumber}
-                                        </p>
+                            {profile.vehicles.map((vehicle) => (
+                                <div
+                                    key={vehicle._id}
+                                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <Car className="w-6 h-6 text-gray-400" />
+                                        <div>
+                                            <h3 className="font-medium">
+                                                {vehicle.make} {vehicle.model}
+                                            </h3>
+                                            <p className="text-sm text-gray-500">
+                                                {vehicle.year} • {vehicle.plateNumber}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <button
+                                            onClick={() => handleDeleteVehicle(vehicle._id)}
+                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                    <button
-                                        onClick={() => handleDeleteVehicle(vehicle._id)}
-                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                         </div>
 
                         {/* Add Vehicle Modal */}
@@ -526,69 +526,69 @@ const ProfilePage = () => {
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-semibold">Security</h2>
                         <button
-                        onClick={() => setShowPasswordSection(!showPasswordSection)}
-                        className="text-blue-600 hover:text-blue-800"
+                            onClick={() => setShowPasswordSection(!showPasswordSection)}
+                            className="text-blue-600 hover:text-blue-800"
                         >
-                        {showPasswordSection ? 'Cancel' : 'Change Password'}
+                            {showPasswordSection ? 'Cancel' : 'Change Password'}
                         </button>
                     </div>
 
                     <AnimatePresence>
                         {showPasswordSection && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="space-y-4"
-                        >
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Current Password
-                                </label>
-                                <input
-                                    type="password"
-                                    value={passwords.old}
-                                    onChange={(e) => setPasswords({ ...passwords, old: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    New Password
-                                </label>
-                                <input
-                                    type="password"
-                                    value={passwords.new}
-                                    onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Confirm New Password
-                                </label>
-                                <input
-                                    type="password"
-                                    value={passwords.confirm}
-                                    onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={handlePasswordUpdate}
-                                    disabled={loading}
-                                    className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                    {loading ? (
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : (
-                                        <Shield size={20} />
-                                    )}
-                                    <span>Update Password</span>
-                                </button>
-                            </div>
-                        </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="space-y-4"
+                            >
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Current Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={passwords.old}
+                                        onChange={(e) => setPasswords({ ...passwords, old: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        New Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={passwords.new}
+                                        onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Confirm New Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={passwords.confirm}
+                                        onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={handlePasswordUpdate}
+                                        disabled={loading}
+                                        className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        {loading ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <Shield size={20} />
+                                        )}
+                                        <span>Update Password</span>
+                                    </button>
+                                </div>
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </motion.div>

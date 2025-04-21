@@ -23,39 +23,39 @@ const LandingPage = () => {
     });
     const features = [
         {
-        icon: <Clock className="w-8 h-8 text-blue-500" />,
-        title: "Real-time Tracking",
-        description: "Track your mechanic's location and estimated arrival time in real-time"
+            icon: <Clock className="w-8 h-8 text-blue-500" />,
+            title: "Real-time Tracking",
+            description: "Track your mechanic's location and estimated arrival time in real-time"
         },
         {
-        icon: <Shield className="w-8 h-8 text-blue-500" />,
-        title: "Secure Payments",
-        description: "Safe and secure payment processing for all services"
+            icon: <Shield className="w-8 h-8 text-blue-500" />,
+            title: "Secure Payments",
+            description: "Safe and secure payment processing for all services"
         },
         {
-        icon: <MapPin className="w-8 h-8 text-blue-500" />,
-        title: "Verified Mechanics",
-        description: "All mechanics are verified and certified professionals"
+            icon: <MapPin className="w-8 h-8 text-blue-500" />,
+            title: "Verified Mechanics",
+            description: "All mechanics are verified and certified professionals"
         },
         {
-        icon: <AlertCircle className="w-8 h-8 text-blue-500" />,
-        title: "SOS Button",
-        description: "24/7 emergency assistance with just one tap"
+            icon: <AlertCircle className="w-8 h-8 text-blue-500" />,
+            title: "SOS Button",
+            description: "24/7 emergency assistance with just one tap"
         }
     ];
 
     const testimonials = [
         {
-        name: "John Doe",
-        role: "Vehicle Owner",
-        content: "Theekkardo saved me when my car broke down on the highway. Quick and professional service!",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+            name: "John Doe",
+            role: "Vehicle Owner",
+            content: "Theekkardo saved me when my car broke down on the highway. Quick and professional service!",
+            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
         },
         {
-        name: "Jane Smith",
-        role: "Mechanic Partner",
-        content: "Being part of Theekkardo has helped me grow my business and connect with more customers.",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+            name: "Jane Smith",
+            role: "Mechanic Partner",
+            content: "Being part of Theekkardo has helped me grow my business and connect with more customers.",
+            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
         }
     ];
 
@@ -391,21 +391,21 @@ const LandingPage = () => {
                     <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">How It Works</h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
-                        {
-                            step: "1",
-                            title: "Request Service",
-                            description: "Select your location and describe your vehicle issue"
-                        },
-                        {
-                            step: "2",
-                            title: "Get Matched",
-                            description: "We'll connect you with the nearest available mechanic"
-                        },
-                        {
-                            step: "3",
-                            title: "Problem Solved",
-                            description: "Get your vehicle fixed and pay securely through the app"
-                        }
+                            {
+                                step: "1",
+                                title: "Request Service",
+                                description: "Select your location and describe your vehicle issue"
+                            },
+                            {
+                                step: "2",
+                                title: "Get Matched",
+                                description: "We'll connect you with the nearest available mechanic"
+                            },
+                            {
+                                step: "3",
+                                title: "Problem Solved",
+                                description: "Get your vehicle fixed and pay securely through the app"
+                            }
                         ].map((item, index) => (
                             <motion.div
                                 key={index}

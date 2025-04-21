@@ -20,13 +20,13 @@ const LoginPage = () => {
         try {
             const res = await axios.post('http://localhost:5000/user/login', { email, password }, { withCredentials: true });
 
-            if(res.status === 200) {
+            if (res.status === 200) {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 toast.success('Login Successful');
                 window.location.href = '/';
             }
         }
-        catch(err) {
+        catch (err) {
             toast.error(err.response?.data?.message || 'Login Failed');
         }
         finally {
@@ -74,13 +74,13 @@ const LoginPage = () => {
 
                     <div className="flex items-center justify-between">
                         <label className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={rememberMe}
-                            onChange={(e) => setRememberMe(e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-600">Remember me</span>
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span className="text-sm text-gray-600">Remember me</span>
                         </label>
                         <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800">
                             Forgot Password?
@@ -97,10 +97,10 @@ const LoginPage = () => {
                 </form>
 
                 <p className="text-center mt-6 text-gray-600">
-                Don't have an account?{' '}
-                <Link to="/signup" className="text-blue-600 hover:text-blue-800">
-                    Sign up
-                </Link>
+                    Don't have an account?{' '}
+                    <Link to="/signup" className="text-blue-600 hover:text-blue-800">
+                        Sign up
+                    </Link>
                 </p>
             </motion.div>
         </div>

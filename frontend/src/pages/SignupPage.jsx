@@ -14,7 +14,7 @@ const SignupPage = () => {
         confirmPassword: '',
         phone: '',
         role: 'user',
-    }); 
+    });
 
     const handleRoleChange = (selectedRole) => {
         setRole(selectedRole);
@@ -27,7 +27,7 @@ const SignupPage = () => {
         setError('');
         setLoading(true);
 
-        if(formData.password !== formData.confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             setLoading(false);
             return;
@@ -35,12 +35,12 @@ const SignupPage = () => {
 
         try {
             const res = await axios.post('http://localhost:5000/user/signup', formData);
-            if(res.status === 200) {
+            if (res.status === 200) {
                 alert('Signup Successful! Redirecting to login...');
                 window.location.href = '/login';
-            }            
+            }
         }
-        catch(err) {
+        catch (err) {
             setError(err.response?.data?.message || 'Signup failed');
         }
         finally {
@@ -68,18 +68,17 @@ const SignupPage = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-3 gap-4 mb-6">
                         {["user", "mechanic", "admin"].map((roleType) => (
-                        <button
-                            key={roleType}
-                            type="button"
-                            onClick={() => handleRoleChange(roleType)}
-                            className={`py-2 px-4 rounded-lg text-sm ${
-                            role === roleType
-                                ? "bg-blue-600 text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
-                        >
-                            {roleType}
-                        </button>
+                            <button
+                                key={roleType}
+                                type="button"
+                                onClick={() => handleRoleChange(roleType)}
+                                className={`py-2 px-4 rounded-lg text-sm ${role === roleType
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                    }`}
+                            >
+                                {roleType}
+                            </button>
                         ))}
                     </div>
 
@@ -122,24 +121,24 @@ const SignupPage = () => {
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                         <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        placeholder="Password"
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            placeholder="Password"
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                         <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        placeholder="Confirm Password"
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            type="password"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleInputChange}
+                            placeholder="Confirm Password"
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 

@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { 
-  User, 
-  Star, 
-  Clock, 
-  DollarSign, 
-  CheckCircle, 
-  XCircle, 
-  MessageSquare,
-  Loader2,
-  ThumbsUp,
-  Calendar
+import {
+    User,
+    Star,
+    Clock,
+    DollarSign,
+    CheckCircle,
+    XCircle,
+    MessageSquare,
+    Loader2,
+    ThumbsUp,
+    Calendar
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -53,14 +53,14 @@ const BidsPage = () => {
         updatedAt: '',
         __v: 0
     });
-    
+
 
     useEffect(() => {
         const fetchBids = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/service-request/bids/${requestId}`, { withCredentials: true });
 
-                if(response.status === 200) {
+                if (response.status === 200) {
                     setBids(response.data.bids);
                     setServiceRequest(response.data.serviceRequest);
                     toast.success('Bids fetched successfully');
@@ -69,7 +69,7 @@ const BidsPage = () => {
                     toast.error('An error occurred');
                 }
             }
-            catch(error) {
+            catch (error) {
                 console.error("Error fetching bids:", error);
                 toast.error("Failed to load bids. Please try again.");
             }
@@ -141,23 +141,23 @@ const BidsPage = () => {
 
         setLoading(true);
         try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        toast.success('Bid accepted successfully! The mechanic has been notified.');
-        setShowConfirmModal(false);
-        // Navigate to a confirmation or tracking page
-        navigate(`/service-tracking/${requestId}`);
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            toast.success('Bid accepted successfully! The mechanic has been notified.');
+            setShowConfirmModal(false);
+            // Navigate to a confirmation or tracking page
+            navigate(`/service-tracking/${requestId}`);
         } catch (error) {
-        toast.error('Failed to accept bid. Please try again.');
+            toast.error('Failed to accept bid. Please try again.');
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <Toaster position="top-right" />
-        
+
             <div className="max-w-4xl mx-auto">
                 {/* Service Request Details */}
                 <div className="bg-white rounded-xl shadow-md p-6 mb-8">
@@ -219,9 +219,9 @@ const BidsPage = () => {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                <div className="text-2xl font-bold text-blue-600">
-                                    ${bid.bidAmount}
-                                </div>
+                                    <div className="text-2xl font-bold text-blue-600">
+                                        ${bid.bidAmount}
+                                    </div>
                                 </div>
                             </div>
 
@@ -247,46 +247,46 @@ const BidsPage = () => {
 
                 {/* Confirmation Modal */}
                 <AnimatePresence>
-                {showConfirmModal && selectedBid && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-                    >
+                    {showConfirmModal && selectedBid && (
                         <motion.div
-                            initial={{ scale: 0.95, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
                         >
-                            <h3 className="text-xl font-semibold mb-4">Confirm Selection</h3>
-                            <p className="text-gray-600 mb-6">
-                            Are you sure you want to accept the bid from {selectedBid.mechanicName} for ${selectedBid.amount}?
-                            </p>
-                            <div className="flex justify-end space-x-4">
-                                <button
-                                    onClick={() => setShowConfirmModal(false)}
-                                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={confirmAcceptBid}
-                                    disabled={loading}
-                                    className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                    {loading ? (
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : (
-                                    <CheckCircle size={20} />
-                                    )}
-                                    <span>Confirm</span>
-                                </button>
-                            </div>
+                            <motion.div
+                                initial={{ scale: 0.95, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.95, opacity: 0 }}
+                                className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md"
+                            >
+                                <h3 className="text-xl font-semibold mb-4">Confirm Selection</h3>
+                                <p className="text-gray-600 mb-6">
+                                    Are you sure you want to accept the bid from {selectedBid.mechanicName} for ${selectedBid.amount}?
+                                </p>
+                                <div className="flex justify-end space-x-4">
+                                    <button
+                                        onClick={() => setShowConfirmModal(false)}
+                                        className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmAcceptBid}
+                                        disabled={loading}
+                                        className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        {loading ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <CheckCircle size={20} />
+                                        )}
+                                        <span>Confirm</span>
+                                    </button>
+                                </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
+                    )}
                 </AnimatePresence>
             </div>
         </div>
