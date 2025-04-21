@@ -9,6 +9,7 @@ import ProfilePage from './pages/ProfilePage';
 import BidsPage from './pages/BidsPage';
 import MechanicRequestsPage from './pages/MechanicRequestsPage';
 import MechanicServicePage from './pages/MechanicServicePage';
+import UserServicePage from './pages/UserServicePage';
 
 function App() {
 	return (
@@ -23,6 +24,7 @@ function App() {
 				<Route path="/bids/:requestId" element={<BidsPage />} />
 				<Route path="/mechanic/requests" element={<MechanicRequestsPage />} />
 				<Route path="/mechanic/service/:requestId" element={<MechanicServicePage />} />
+				<Route path="/service/:requestId" element={<UserServicePage />} />
 			</Routes>
 			<Footer />
 		</div>
