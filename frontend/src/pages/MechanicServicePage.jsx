@@ -15,7 +15,6 @@ const MechanicServicePage = () => {
         const fetchRequest = async () => {
             setLoading(true);
             try {
-                // Simulate API call
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 setRequest({
                     id: requestId,

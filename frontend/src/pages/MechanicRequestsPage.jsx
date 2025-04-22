@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Clock, MapPin, Car, Loader2, DollarSign, X } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -56,18 +57,19 @@ const MechanicRequestsPage = () => {
         const fetchRequests = async () => {
             setLoading(true);
             try {
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                setRequests(mockRequests);
+                const res = await axios.get('http://localhost:5000/service-request/', { withCredentials: true});
+                if(res.status === 200) {
+                    setRequests(res.data.serviceRequests);
+                }
             } catch (error) {
                 toast.error('Failed to fetch service requests');
+                console.log(error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchRequests();
-        const interval = setInterval(fetchRequests, 30000);
-        return () => clearInterval(interval);
     }, []);
 
     const formatTimeAgo = (date) => {
@@ -102,19 +104,21 @@ const MechanicRequestsPage = () => {
             setBidAmount('');
             setEstimatedTime('');
             setMessage('');
-        } catch (error) {
+        } 
+        catch (error) {
             toast.error('Failed to place bid');
-        } finally {
+        } 
+        finally {
             setLoading(false);
         }
     };
 
     const filteredRequests = showEmergencyOnly ? requests.filter(req => req.isEmergency) : requests;
-
+    
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <Toaster position="top-right" />
-
+            {console.log(filteredRequests)}
             <div className="max-w-4xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-2xl font-bold text-gray-900">Service Requests</h1>
@@ -143,7 +147,7 @@ const MechanicRequestsPage = () => {
                     <div className="space-y-6">
                         {filteredRequests.map((request) => (
                             <motion.div
-                                key={request.id}
+                                key={request._id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="bg-white rounded-xl shadow-sm p-6"
@@ -161,11 +165,11 @@ const MechanicRequestsPage = () => {
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-gray-600">{request.issue}</p>
+                                        <p className="text-gray-600">{request.issueDescription}</p>
                                         <div className="flex items-center space-x-4 text-sm text-gray-500">
                                             <div className="flex items-center">
                                                 <MapPin className="w-4 h-4 mr-1" />
-                                                <span>{request.location}</span>
+                                                {/* <span>{request.location}</span> */}
                                             </div>
                                             <div className="flex items-center">
                                                 <Clock className="w-4 h-4 mr-1" />
