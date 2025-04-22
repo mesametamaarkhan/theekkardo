@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 
 const LoginPage = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
@@ -22,8 +23,16 @@ const LoginPage = () => {
 
             if (res.status === 200) {
                 sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('user', JSON.stringify(res.data.user));
                 toast.success('Login Successful');
-                window.location.href = '/';
+
+                console.log('a');
+                if(res.data.user.role === 'mechanic') {
+                    navigate('/mechanic/requests');
+                }
+                else {
+                    window.location.href = '/';
+                }
             }
         }
         catch (err) {

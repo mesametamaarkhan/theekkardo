@@ -7,6 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 const MechanicRequestsPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [requests, setRequests] = useState([]);
     const [showEmergencyOnly, setShowEmergencyOnly] = useState(false);
     const [showBidModal, setShowBidModal] = useState(false);
@@ -49,6 +50,9 @@ const MechanicRequestsPage = () => {
     ];
 
     useEffect(() => {
+        const loggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        setIsLoggedIn(loggedIn);
+        
         const fetchRequests = async () => {
             setLoading(true);
             try {
