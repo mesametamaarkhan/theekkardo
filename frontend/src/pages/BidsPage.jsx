@@ -70,56 +70,6 @@ const BidsPage = () => {
         fetchBids();
     }, []);
 
-    // const serviceRequest = {
-    //     id: requestId,
-    //     service: "Emergency Repairs",
-    //     vehicle: "Toyota Camry 2020",
-    //     issue: "Car won't start, possibly battery related issue",
-    //     location: "123 Main St, New York",
-    //     preferredTime: "2024-03-20T10:00",
-    //     status: "Pending"
-    // };
-
-    // // Mock bids data
-    // const [bids] = useState([
-    //     {
-    //         id: 1,
-    //         mechanicId: 101,
-    //         mechanicName: "John Smith",
-    //         mechanicRating: 4.8,
-    //         amount: 120,
-    //         estimatedTime: "1-2 hours",
-    //         message: "I can help you with your battery issue. I have all the necessary equipment and can arrive within 30 minutes.",
-    //         experience: "10 years",
-    //         completedJobs: 234,
-    //         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80"
-    //     },
-    //     {
-    //         id: 2,
-    //         mechanicId: 102,
-    //         mechanicName: "Mike Johnson",
-    //         mechanicRating: 4.9,
-    //         amount: 150,
-    //         estimatedTime: "1 hour",
-    //         message: "Specialized in battery diagnostics and replacement. Available immediately with all required tools.",
-    //         experience: "15 years",
-    //         completedJobs: 456,
-    //         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80"
-    //     },
-    //     {
-    //         id: 3,
-    //         mechanicId: 103,
-    //         mechanicName: "Sarah Williams",
-    //         mechanicRating: 4.7,
-    //         amount: 135,
-    //         estimatedTime: "1-1.5 hours",
-    //         message: "I can diagnose and fix your battery issue. I'll bring a replacement battery just in case it's needed.",
-    //         experience: "8 years",
-    //         completedJobs: 189,
-    //         avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80"
-    //     }
-    // ]);
-
     const handleAcceptBid = async (bid) => {
         setSelectedBid(bid);
         setShowConfirmModal(true);
@@ -127,21 +77,33 @@ const BidsPage = () => {
 
     const confirmAcceptBid = async () => {
         if (!selectedBid) return;
-
+    
         setLoading(true);
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            toast.success('Bid accepted successfully! The mechanic has been notified.');
-            setShowConfirmModal(false);
-            // Navigate to a confirmation or tracking page
-            navigate(`/service-tracking/${requestId}`);
-        } catch (error) {
-            toast.error('Failed to accept bid. Please try again.');
-        } finally {
+            const response = await axios.put(
+                `http://localhost:5000/service-request/accept-bid/${selectedBid._id}`,
+                {},
+                { withCredentials: true }
+            );
+    
+            if (response.status === 200) {
+                toast.success('Bid accepted successfully! The mechanic has been notified.');
+                setShowConfirmModal(false);
+                navigate(`/service/${requestId}`);
+            } 
+            else {
+                toast.error('Failed to accept the bid. Please try again.');
+            }
+        } 
+        catch (error) {
+            console.error('Error accepting bid:', error);
+            toast.error('An error occurred. Please try again.');
+        } 
+        finally {
             setLoading(false);
         }
     };
+    
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -251,7 +213,7 @@ const BidsPage = () => {
                             >
                                 <h3 className="text-xl font-semibold mb-4">Confirm Selection</h3>
                                 <p className="text-gray-600 mb-6">
-                                    Are you sure you want to accept the bid from {selectedBid.mechanicName} for ${selectedBid.amount}?
+                                    Are you sure you want to accept the bid from {selectedBid.mechanicId.fullName} for ${selectedBid.bidAmount}?
                                 </p>
                                 <div className="flex justify-end space-x-4">
                                     <button

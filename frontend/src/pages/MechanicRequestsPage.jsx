@@ -98,12 +98,15 @@ const MechanicRequestsPage = () => {
 
         setLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            toast.success('Bid placed successfully!');
-            setShowBidModal(false);
-            setBidAmount('');
-            setEstimatedTime('');
-            setMessage('');
+            const res = await axios.post('http://localhost:5000/service-request/place-bid', { serviceRequestId: selectedRequest._id, bidAmount, message }, { withCredentials: true });
+            
+            if(res.status === 200) {
+                toast.success('Bid placed successfully!');
+                setShowBidModal(false);
+                setBidAmount('');
+                setEstimatedTime('');
+                setMessage('');
+            }
         } 
         catch (error) {
             toast.error('Failed to place bid');
@@ -118,7 +121,7 @@ const MechanicRequestsPage = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <Toaster position="top-right" />
-            {console.log(filteredRequests)}
+
             <div className="max-w-4xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-2xl font-bold text-gray-900">Service Requests</h1>
@@ -169,7 +172,14 @@ const MechanicRequestsPage = () => {
                                         <div className="flex items-center space-x-4 text-sm text-gray-500">
                                             <div className="flex items-center">
                                                 <MapPin className="w-4 h-4 mr-1" />
-                                                {/* <span>{request.location}</span> */}
+                                                <a
+                                                    href={`https://www.google.com/maps?q=${request.location.lat},${request.location.lng}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:underline"
+                                                >
+                                                    View Location
+                                                </a>
                                             </div>
                                             <div className="flex items-center">
                                                 <Clock className="w-4 h-4 mr-1" />
