@@ -17,40 +17,14 @@ const MechanicRequestsPage = () => {
     const [estimatedTime, setEstimatedTime] = useState('');
     const [message, setMessage] = useState('');
 
-    const mockRequests = [
-        {
-            id: '1',
-            vehicle: {
-                make: 'Toyota',
-                model: 'Camry',
-                year: 2020,
-                plateNumber: 'ABC123'
-            },
-            issue: "Car won't start, possibly battery related issue",
-            location: "123 Main St, New York",
-            createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-            isEmergency: true,
-            preferredTime: "2024-03-20T10:00:00Z",
-            status: 'pending'
-        },
-        {
-            id: '2',
-            vehicle: {
-                make: 'Honda',
-                model: 'Civic',
-                year: 2019,
-                plateNumber: 'XYZ789'
-            },
-            issue: "Strange noise from engine when accelerating",
-            location: "456 Park Ave, New York",
-            createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-            isEmergency: false,
-            preferredTime: "2024-03-21T14:00:00Z",
-            status: 'pending'
-        }
-    ];
-
     useEffect(() => {
+        navigator.serviceWorker.addEventListener("message", (event) => {
+            if (event.data.type === "service_request") {
+                console.log("Received service_request notification:", event.data);
+                window.location.reload();
+            }
+        });
+
         const loggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
         setIsLoggedIn(loggedIn);
         

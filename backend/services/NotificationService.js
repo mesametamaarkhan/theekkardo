@@ -2,11 +2,12 @@ import admin from "../config/firebase.js";
 import { Notification } from '../models/Notification.js';
 import { User } from '../models/User.js';
 
-export async function notifyMechanicsAboutService(serviceDetails) {
+export const notifyMechanicsAboutService = async (serviceDetails, userId) => {
     try {
         const mechanics = await User.find({ role: 'mechanic', fcmToken: { $ne: null } });
+        const user = await User.findOne({ _id: userId });
         const title = "New Service Request";
-        const body = `New service request from ${serviceDetails.userName} for ${serviceDetails.vehicleMake} ${serviceDetails.vehicleModel}.`;
+        const body = `New service request from ${user.fullName} for ${serviceDetails.vehicle.make} ${serviceDetails.vehicle.model}.`;
 
         const payload = {
             notification: { title, body },
@@ -19,11 +20,6 @@ export async function notifyMechanicsAboutService(serviceDetails) {
         const tokens = mechanics.map(mechanic => mechanic.fcmToken);
 
         if(tokens.length) {
-            // await admin.messaging().sendMulticast({
-            //     tokens,
-            //     notification: payload.notification,
-            //     data: payload.data,
-            // });
             const results = await Promise.all(
                 tokens.map((token) => admin.messaging().send({ ...payload, token }))
             );
@@ -35,6 +31,85 @@ export async function notifyMechanicsAboutService(serviceDetails) {
 
         await Notification.insertMany(notifications);
 
+    } 
+    catch (error) {
+        console.error("Error notifying mechanics:", error);
+    }
+};
+
+export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
+    try {
+        const users = await User.find({ role: 'user', fcmToken: { $ne: null } });
+        const mechanic = await User.findOne({ _id: mechanicId });
+        const title = "New Bid Received";
+        const body = `New bid received from ${mechanic.fullName} for your service request.`;
+
+        const payload = {
+            notification: { title, body },
+            data: {
+                type: 'bid_received',
+                bidId: bidDetails._id.toString(),
+            }
+        };
+
+        const tokens = users.map(user => user.fcmToken);
+
+        if(tokens.length) {
+            const results = await Promise.all(
+                tokens.map((token) => admin.messaging().send({ ...payload, token }))
+            );
+        };
+
+        const notifications = users.map(user => ({
+            title, body, recipient: user._id, type: 'bid_received'
+        }));
+
+        await Notification.insertMany(notifications);
+    } 
+    catch (error) {
+        console.error("Error notifying mechanics:", error);
+    }
+};
+
+export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceRequestDetails) => {
+    try {
+        
+        console.log('a');
+        const mechanic = await User.findOne({ _id: serviceRequestDetails.mechanicId, fcmToken: { $ne: null }});
+        
+        const title = "New Bid Accepted";
+        const body = `Your bid with service id: ${bidDetails.serviceRequestId} was accepted by the user.`;
+
+        
+        console.log('b');
+        const payload = {
+            notification: { title, body },
+            data: {
+                type: 'bid_accepted',
+                bidId: bidDetails._id.toString(),
+            }
+        };
+
+        
+        console.log('c');
+        const token = mechanic.fcmToken;
+
+        if (token) {
+            const result = await admin.messaging().send({ ...payload, token });
+        }        
+
+        
+        console.log('d');
+        const notification = {
+            title,
+            body,
+            recipient: mechanic._id,
+            type: 'bid_accepted'
+        };
+        
+        
+        console.log('e');
+        await Notification.insertOne(notification);
     } 
     catch (error) {
         console.error("Error notifying mechanics:", error);

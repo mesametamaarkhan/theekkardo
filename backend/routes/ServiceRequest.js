@@ -1,6 +1,6 @@
 import express from 'express';
 import authenticateToken from '../middleware/AuthenticateToken.js';
-import { notifyMechanicsAboutService } from '../services/NotificationService.js';
+import { notifyMechanicsAboutService, notifyUsersAboutBid, notifyMechanicAboutBidAcceptance } from '../services/NotificationService.js';
 import { ServiceRequest } from '../models/ServiceRequest.js';
 import { Bid } from '../models/Bid.js';
 
@@ -24,7 +24,7 @@ router.post('/', authenticateToken, async (req, res) => {
         });
         
         await serviceRequest.save();
-        await notifyMechanicsAboutService(serviceRequest);
+        await notifyMechanicsAboutService(serviceRequest, req.user._id);
         res.status(200).json({ message: 'Service request created successfully', serviceRequest });
     }
     catch(error) {
@@ -153,6 +153,7 @@ router.post('/place-bid', authenticateToken, async (req, res) => {
         });
 
         await bid.save();
+        await notifyUsersAboutBid(bid, _id);
         res.status(200).json({ message: 'Bid placed successfully', bid });
     }
     catch(error) {
@@ -222,7 +223,10 @@ router.put('/accept-bid/:bidId', authenticateToken, async (req, res) => {
             { $set: { status: "rejected" } }
         );
 
-        res.status(200).json({ message: "Bid accepted successfully" });
+        await notifyMechanicAboutBidAcceptance(bid, serviceRequest);
+        
+        console.log('a');
+        res.status(200).json({ message: "Bid accepted successfully", bid, serviceRequest });
     }
     catch(error) {
         res.status(500).json({ message: 'Server error', error });
