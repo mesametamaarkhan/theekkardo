@@ -1,5 +1,6 @@
 import express from 'express';
 import authenticateToken from '../middleware/AuthenticateToken.js';
+import { notifyMechanicsAboutService } from '../services/NotificationService.js';
 import { ServiceRequest } from '../models/ServiceRequest.js';
 import { Bid } from '../models/Bid.js';
 
@@ -23,6 +24,7 @@ router.post('/', authenticateToken, async (req, res) => {
         });
         
         await serviceRequest.save();
+        await notifyMechanicsAboutService(serviceRequest);
         res.status(200).json({ message: 'Service request created successfully', serviceRequest });
     }
     catch(error) {
