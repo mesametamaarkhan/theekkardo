@@ -75,7 +75,6 @@ const LandingPage = () => {
         };
 
         getServices();
-        console.log(services);
     }, []);
 
     const handleServiceRequest = (service) => {
