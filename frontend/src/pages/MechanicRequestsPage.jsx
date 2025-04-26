@@ -18,13 +18,6 @@ const MechanicRequestsPage = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        navigator.serviceWorker.addEventListener("message", (event) => {
-            if (event.data.type === "service_request") {
-                console.log("Received service_request notification:", event.data);
-                window.location.reload();
-            }
-        });
-
         const loggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
         setIsLoggedIn(loggedIn);
         

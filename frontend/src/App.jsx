@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { messaging } from './firebase-config'; // ✅ import messaging
+import { onMessage, getToken } from "firebase/messaging"; // ✅ import onMessage and getToken
+
 import LandingPage from './pages/LandingPage';
 import { Footer, Navbar } from './components';
 import LoginPage from './pages/LoginPage';
@@ -12,6 +15,22 @@ import MechanicServicePage from './pages/MechanicServicePage';
 import UserServicePage from './pages/UserServicePage';
 
 function App() {
+	useEffect(() => {
+		const unsubscribe = onMessage(messaging, (payload) => {
+			console.log("Message received:", payload);
+
+			if (payload?.data?.type === "service_request") {
+				console.log("New service request received!");
+				
+			}
+		});
+
+		// Clean up listener on unmount
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col">
 			<Navbar />

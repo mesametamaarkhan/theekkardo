@@ -10,16 +10,21 @@ export const notifyMechanicsAboutService = async (serviceDetails, userId) => {
         const body = `New service request from ${user.fullName} for ${serviceDetails.vehicle.make} ${serviceDetails.vehicle.model}.`;
 
         const payload = {
-            notification: { title, body },
+            notification: {
+                title,
+                body,
+            },
             data: {
+                click_action: "http://localhost:5137/mechanic/requests", // ✅ Put it inside `data`
                 type: 'service_request',
                 serviceId: serviceDetails._id.toString(),
             }
         };
 
+
         const tokens = mechanics.map(mechanic => mechanic.fcmToken);
 
-        if(tokens.length) {
+        if (tokens.length) {
             const results = await Promise.all(
                 tokens.map((token) => admin.messaging().send({ ...payload, token }))
             );
@@ -31,7 +36,7 @@ export const notifyMechanicsAboutService = async (serviceDetails, userId) => {
 
         await Notification.insertMany(notifications);
 
-    } 
+    }
     catch (error) {
         console.error("Error notifying mechanics:", error);
     }
@@ -54,7 +59,7 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
 
         const tokens = users.map(user => user.fcmToken);
 
-        if(tokens.length) {
+        if (tokens.length) {
             const results = await Promise.all(
                 tokens.map((token) => admin.messaging().send({ ...payload, token }))
             );
@@ -65,7 +70,7 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
         }));
 
         await Notification.insertMany(notifications);
-    } 
+    }
     catch (error) {
         console.error("Error notifying mechanics:", error);
     }
@@ -73,14 +78,14 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
 
 export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceRequestDetails) => {
     try {
-        
+
         console.log('a');
-        const mechanic = await User.findOne({ _id: serviceRequestDetails.mechanicId, fcmToken: { $ne: null }});
-        
+        const mechanic = await User.findOne({ _id: serviceRequestDetails.mechanicId, fcmToken: { $ne: null } });
+
         const title = "New Bid Accepted";
         const body = `Your bid with service id: ${bidDetails.serviceRequestId} was accepted by the user.`;
 
-        
+
         console.log('b');
         const payload = {
             notification: { title, body },
@@ -90,15 +95,15 @@ export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceReques
             }
         };
 
-        
+
         console.log('c');
         const token = mechanic.fcmToken;
 
         if (token) {
             const result = await admin.messaging().send({ ...payload, token });
-        }        
+        }
 
-        
+
         console.log('d');
         const notification = {
             title,
@@ -106,11 +111,11 @@ export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceReques
             recipient: mechanic._id,
             type: 'bid_accepted'
         };
-        
-        
+
+
         console.log('e');
         await Notification.insertOne(notification);
-    } 
+    }
     catch (error) {
         console.error("Error notifying mechanics:", error);
     }
