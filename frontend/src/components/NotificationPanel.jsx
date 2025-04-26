@@ -1,28 +1,59 @@
-import React from 'react';
-import usePollingNotifications from '../hooks/usePollingNotifications'; // adjust path if needed
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const NotificationPanel = () => {
-    const notifications = usePollingNotifications(60000); // Poll every 60 seconds
+const NotificationPanel = ({ showNotifications }) => {
+    const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+        if (showNotifications) {
+            const fetchNotifications = async () => {
+                try {
+                    const response = await axios.get('http://localhost:5000/user/unread-notifications', { withCredentials: true });
+                    setNotifications(response.data.notifications);
+                    console.log(notifications);
+                } catch (error) {
+                    console.error("Error fetching notifications", error);
+                    setNotifications([]); // If error, clear notifications
+                }
+            };
+
+            fetchNotifications();
+        }
+    }, [showNotifications]);
+
+    const handleNotificationClick = async (notificationId, linkToPage) => {
+        try {
+            await axios.put(`http://localhost:5000/user/notification/${notificationId}`, {}, { withCredentials: true });
+            window.location.href = linkToPage;
+        } catch (error) {
+            console.error("Error marking notification as read", error);
+        }
+    };
 
     return (
-        <div className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50 overflow-hidden animate-fade-in">
-            <div className="max-h-72 overflow-y-auto">
-                {notifications.length === 0 ? (
-                    <div className="px-4 py-3 text-center text-gray-500">No new notifications</div>
-                ) : (
-                    notifications.map((notification) => (
-                        <div key={notification.id} className="px-4 py-3 hover:bg-gray-100 transition">
-                            <div className="text-sm font-semibold text-gray-800">
-                                {notification.title}
-                                {notification.unread && (
-                                    <span className="ml-2 text-xs text-red-500">New</span>
-                                )}
+        <div className="relative">
+            {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50 overflow-hidden animate-fade-in">
+                    <div className="max-h-72 overflow-y-auto">
+                        {notifications.length > 0 ? (
+                            notifications.map((notification) => (
+                                <div
+                                    key={notification._id}
+                                    className="px-4 py-3 hover:bg-gray-100 transition cursor-pointer"
+                                    onClick={() => handleNotificationClick(notification._id, notification.linkToPage)}
+                                >
+                                    <div className="text-sm font-semibold text-gray-800">{notification.title}</div>
+                                    <div className="text-xs text-gray-500">{new Date(notification.createdAt).toLocaleString()}</div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="px-4 py-6 text-center text-gray-500">
+                                No notifications right now.
                             </div>
-                            <div className="text-xs text-gray-500">{notification.time}</div>
-                        </div>
-                    ))
-                )}
-            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

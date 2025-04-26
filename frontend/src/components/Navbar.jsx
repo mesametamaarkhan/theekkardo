@@ -34,7 +34,7 @@ const Navbar = () => {
                                         {/* Red dot */}
                                         <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white"></span>
                                     </button>
-                                    {showNotifications && <NotificationPanel />}
+                                    {showNotifications && <NotificationPanel showNotifications={showNotifications} />}
                                 </div>
                                 <Link to="/profile" className="text-gray-700 hover:text-blue-600">
                                     <User className="w-6 h-6" />

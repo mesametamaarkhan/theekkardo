@@ -6,6 +6,7 @@ import multer from 'multer';
 import cloudinary from '../config/cloudinaryConfig.js';
 import authenticateToken from '../middleware/AuthenticateToken.js';
 import { User } from '../models/User.js';
+import { Notification } from '../models/Notification.js';
 
 dotenv.config();
 const router = express.Router();
@@ -353,26 +354,38 @@ router.post("/token", authenticateToken, async (req, res) => {
     }
 });
 
-//notify route
-router.post('/notify', authenticateToken, async (req, res) => {
-    const { receiverId, content } = req.body;
-    const user = await User.findById(receiverId);
-    if (!user?.fcmToken) return res.status(400).json({ error: "No token" });
-
-    const payload = {
-        token: user.fcmToken,
-        notification: {
-            title: "New Message",
-            body: content,
-        },
-    }
+//update notification status to read
+router.put('/notification/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { _id } = req.user;
 
     try {
-        await messaging.send(payload);
-        res.status(200).json({ success: true });
-    } 
-    catch (err) {
-        res.status(500).json({ error: err.message });
+        const notification = await Notification.findOneAndUpdate({ _id: id, recipientId: _id }, { isRead: true }, { new: true });
+        if (!notification) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+
+        res.status(200).json({ message: 'Notification status updated to read', notification });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+//get unread notifications
+router.get('/unread-notifications', authenticateToken, async (req,res) => {
+    const { _id } = req.user;
+    
+    try {
+        const notifications = await Notification.find({ recipientId: _id, isRead: false }).sort({ createdAt: -1 });
+        if (!notifications) {
+            return res.status(404).json({ message: 'No unread notifications found' });
+        }
+
+        res.status(200).json({ notifications });
+    }
+    catch(error) {
+        res.status(500).json({ message: 'Server error', error });
     }
 });
 

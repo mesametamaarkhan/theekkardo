@@ -1,38 +1,26 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const usePollingNotifications = (interval = 60000) => {
-  const [notifications, setNotifications] = useState([]);
-  
-  useEffect(() => {
+const usePollingNotifications = () => {
+    const [notifications, setNotifications] = useState([]);
+    
     const fetchNotifications = async () => {
-      try {
-        const response = await axios.get('/api/unread-notifications');
-        const newNotifications = response.data.map(notification => ({
-          ...notification,
-          unread: true 
-        }));
-        
-        // Merge new notifications with existing ones
-        setNotifications((prevNotifications) => [
-          ...prevNotifications.filter((n) => !newNotifications.some((newN) => newN.id === n.id)),
-          ...newNotifications
-        ]);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
+        try {
+            const response = await axios.get('http://localhost:5000/unread-notifications'); // adjust API route as needed
+            setNotifications(response.data);
+        } catch (error) {
+            console.error("Error fetching notifications:", error);
+        }
     };
 
-    // Fetch notifications initially
-    fetchNotifications();
-    
-    // Poll every `interval` milliseconds (e.g., 60000ms = 1 minute)
-    const intervalId = setInterval(fetchNotifications, interval);
+    useEffect(() => {
+        fetchNotifications();
+        const interval = setInterval(fetchNotifications, 60000); 
 
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [interval]);
+        return () => clearInterval(interval);
+    }, []);
 
-  return notifications;
+    return notifications;
 };
 
 export default usePollingNotifications;

@@ -15,7 +15,7 @@ export const notifyMechanicsAboutService = async (serviceDetails, userId) => {
                 body,
             },
             data: {
-                click_action: "http://localhost:5137/mechanic/requests", // ✅ Put it inside `data`
+                click_action: "http://localhost:5173/mechanic/requests", // ✅ Put it inside `data`
                 type: 'service_request',
                 serviceId: serviceDetails._id.toString(),
             }
@@ -31,7 +31,11 @@ export const notifyMechanicsAboutService = async (serviceDetails, userId) => {
         };
 
         const notifications = mechanics.map(m => ({
-            title, body, recipient: m._id, type: 'service_request'
+            title, 
+            body, 
+            recipientId: m._id, 
+            type: 'service_request', 
+            linkToPage: "http://localhost:5173/mechanic/requests"
         }));
 
         await Notification.insertMany(notifications);
@@ -55,7 +59,7 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
                 body,
             },
             data: {
-                click_action: `http://localhost:5137/bids/${bidDetails.serviceRequestId}`,
+                click_action: `http://localhost:5173/bids/${bidDetails.serviceRequestId}`,
                 type: 'bid_received',
                 serviceId: bidDetails.serviceRequestId.toString(),
             }
@@ -70,7 +74,11 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
         };
 
         const notifications = users.map(user => ({
-            title, body, recipient: user._id, type: 'bid_received'
+            title, 
+            body, 
+            recipientId: user._id, 
+            type: 'bid_received',
+            linkToPage: `http://localhost:5173/bids/${bidDetails.serviceRequestId}`
         }));
 
         await Notification.insertMany(notifications);
@@ -94,7 +102,7 @@ export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceReques
                 body,
             },
             data: {
-                click_action: `http://localhost:5137/mechanic/service/${serviceRequestDetails._id}`,
+                click_action: `http://localhost:5173/mechanic/service/${serviceRequestDetails._id}`,
                 type: 'bid_accepted',
                 serviceId: serviceRequestDetails._id.toString(),
             }
@@ -109,12 +117,11 @@ export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceReques
         const notification = {
             title,
             body,
-            recipient: mechanic._id,
-            type: 'bid_accepted'
+            recipientId: mechanic._id,
+            type: 'bid_accepted',
+            linkToPage: `http://localhost:5173/mechanic/service/${serviceRequestDetails._id}`
         };
 
-
-        console.log('e');
         await Notification.insertOne(notification);
     }
     catch (error) {

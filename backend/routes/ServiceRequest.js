@@ -224,8 +224,6 @@ router.put('/accept-bid/:bidId', authenticateToken, async (req, res) => {
         );
 
         await notifyMechanicAboutBidAcceptance(bid, serviceRequest);
-        
-        console.log('a');
         res.status(200).json({ message: "Bid accepted successfully", bid, serviceRequest });
     }
     catch(error) {
