@@ -50,10 +50,14 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
         const body = `New bid received from ${mechanic.fullName} for your service request.`;
 
         const payload = {
-            notification: { title, body },
+            notification: {
+                title,
+                body,
+            },
             data: {
+                click_action: `http://localhost:5137/bids/${bidDetails.serviceRequestId}`,
                 type: 'bid_received',
-                bidId: bidDetails._id.toString(),
+                serviceId: bidDetails.serviceRequestId.toString(),
             }
         };
 
@@ -78,33 +82,30 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
 
 export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceRequestDetails) => {
     try {
-
-        console.log('a');
         const mechanic = await User.findOne({ _id: serviceRequestDetails.mechanicId, fcmToken: { $ne: null } });
 
         const title = "New Bid Accepted";
         const body = `Your bid with service id: ${bidDetails.serviceRequestId} was accepted by the user.`;
 
 
-        console.log('b');
         const payload = {
-            notification: { title, body },
+            notification: {
+                title,
+                body,
+            },
             data: {
+                click_action: `http://localhost:5137/mechanic/service/${serviceRequestDetails._id}`,
                 type: 'bid_accepted',
-                bidId: bidDetails._id.toString(),
+                serviceId: serviceRequestDetails._id.toString(),
             }
         };
 
-
-        console.log('c');
         const token = mechanic.fcmToken;
 
         if (token) {
             const result = await admin.messaging().send({ ...payload, token });
         }
 
-
-        console.log('d');
         const notification = {
             title,
             body,
