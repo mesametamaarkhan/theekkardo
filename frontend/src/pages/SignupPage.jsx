@@ -23,7 +23,6 @@ const SignupPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
         setError('');
         setLoading(true);
 

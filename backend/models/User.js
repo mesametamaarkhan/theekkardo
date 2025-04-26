@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema(
         profileImage: { type: String },
         otp: { type: String},
         otpExpiry: { type: Date },
+        fcmToken: { type: String },
         vehicles: [
         {
             make: String,

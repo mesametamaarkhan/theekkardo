@@ -14,25 +14,25 @@ const upload = multer({ storage });
 
 //route for user signup
 router.post('/signup', async (req, res) => {
-    if(!req.body.role || !req.body.email || !req.body.password || !req.body.fullName || !req.body.phone) {
+    if (!req.body.role || !req.body.email || !req.body.password || !req.body.fullName || !req.body.phone) {
         return res.status(400).json({ message: 'Some required fields are missing!!' });
     }
 
-    
+
 
     const { role, email, password, fullName, phone } = req.body;
 
     try {
         const existingEmail = await User.findOne({ email });
-        if(existingEmail) {
+        if (existingEmail) {
             return res.status(400).json({ message: 'Email already in use' });
         }
 
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
-        
+
         let verified = false;
-        if(role === "user" || role === "admin" ) {
+        if (role === "user" || role === "admin") {
             verified = true;
         }
 
@@ -48,14 +48,14 @@ router.post('/signup', async (req, res) => {
         await newUser.save();
         res.status(200).json({ message: 'User registration successful' });
     }
-    catch(error) {
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
 
 //route for user login (generates auth token and stores in http-only cookie)
 router.post('/login', async (req, res) => {
-    if(!req.body.email || !req.body.password) {
+    if (!req.body.email || !req.body.password) {
         return res.status(400).json({ message: 'Some required fields are missing' });
     }
 
@@ -63,12 +63,12 @@ router.post('/login', async (req, res) => {
 
     try {
         const existingUser = await User.findOne({ email });
-        if(!existingUser) {
+        if (!existingUser) {
             return res.status(404).json({ message: 'User does not exist.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, existingUser.passwordHash);
-        if(!isPasswordValid) {
+        if (!isPasswordValid) {
             return res.status(400).json({ message: 'Incorrect Password' });
         }
 
@@ -85,14 +85,14 @@ router.post('/login', async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production" ? true : false,
             sameSite: 'Strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000 
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
         res.status(200).json({ message: 'Login Successful', user: { id: existingUser._id, email: existingUser.email, role: existingUser.role } })
     }
-    catch(error) {
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
-    } 
+    }
 });
 
 //route for user logout (remove authToken from cookie)
@@ -109,7 +109,7 @@ router.post('/logout', async (req, res) => {
 
 //change password
 router.put('/change-password', authenticateToken, async (req, res) => {
-    if(!req.body.currPassword || !req.body.newPassword) {
+    if (!req.body.currPassword || !req.body.newPassword) {
         return res.status(400).json({ message: 'Some required fields are missing' });
     }
 
@@ -117,13 +117,13 @@ router.put('/change-password', authenticateToken, async (req, res) => {
     const { email } = req.user;
     try {
         const existingUser = await User.findOne({ email });
-        if(!existingUser) {
+        if (!existingUser) {
             return res.status(404).json({ message: 'User does not exist' });
         }
 
         const isPasswordValid = await bcrypt.compare(currPassword, existingUser.passwordHash);
-        if(!isPasswordValid) {
-            return res.status(400).json({ message: 'Current password is incorrect.'})
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Current password is incorrect.' })
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -134,14 +134,14 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
         res.status(200).json({ message: 'Password changed successfully' });
     }
-    catch(error) {
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
 
 //reset-password
 router.put('/reset-password', async (req, res) => {
-    if(!req.body.newPassword || !req.body.email) {
+    if (!req.body.newPassword || !req.body.email) {
         return res.status(400).json({ message: "Some required fields are missing!" });
     }
 
@@ -149,7 +149,7 @@ router.put('/reset-password', async (req, res) => {
 
     try {
         const existingUser = await User.findOne({ email });
-        if(!existingUser) {
+        if (!existingUser) {
             return res.status(404).json({ message: 'User does not exist' });
         }
 
@@ -160,7 +160,7 @@ router.put('/reset-password', async (req, res) => {
         existingUser.save();
         res.status(200).json({ message: 'Password has been reset successfully' });
     }
-    catch(error) {
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
@@ -171,67 +171,69 @@ router.get('/profile', authenticateToken, async (req, res) => {
 
     try {
         const user = await User.findOne({ email }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
-        if(!user) {
+        if (!user) {
             return res.status(404).json({ message: 'User does not exist' });
         }
 
         res.status(200).json({ user });
-    }   
-    catch(error) {
+    }
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
 
 //update user profile
 router.put('/update-profile', authenticateToken, async (req, res) => {
-    if(!req.body.fullName || !req.body.phone) {
+    if (!req.body.fullName || !req.body.phone) {
         return res.status(400).json({ message: 'Some required fields are missing' });
     }
 
     const { fullName, phone } = req.body;
     const { email } = req.user;
-    
+
     try {
         const existingUser = await User.findOne({ email });
-        if(!existingUser) {
+        if (!existingUser) {
             return res.status(404).json({ message: 'User does not exist' });
         }
 
-        if(phone && phone !== existingUser.phone) {
+        if (phone && phone !== existingUser.phone) {
             const phoneExists = await User.findOne({ phone });
-            if(phoneExists) {
+            if (phoneExists) {
                 return res.status(400).json({ message: 'Phone number already in use' });
             }
         }
 
-        if(fullName) {
+        if (fullName) {
             existingUser.fullName = fullName;
         }
 
-        if(phone) {
+        if (phone) {
             existingUser.phone = phone;
         }
 
         await existingUser.save();
-        res.status(200).json({ message: 'Profile updated successfully', user: {
-            fullName: existingUser.fullName,
-            profileImage: existingUser.profileImage,
-            email: existingUser.email,
-            phone: existingUser.phone,
-            role: existingUser.role,
-            status: existingUser.status,
-            rating: existingUser.rating,
-            verified: existingUser.verified
-        }});
+        res.status(200).json({
+            message: 'Profile updated successfully', user: {
+                fullName: existingUser.fullName,
+                profileImage: existingUser.profileImage,
+                email: existingUser.email,
+                phone: existingUser.phone,
+                role: existingUser.role,
+                status: existingUser.status,
+                rating: existingUser.rating,
+                verified: existingUser.verified
+            }
+        });
     }
-    catch(error) {
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
 
 //update user vehicles
 router.put('/update-vehicles', authenticateToken, async (req, res) => {
-    if(!req.body.vehicles) {
+    if (!req.body.vehicles) {
         return res.status(400).json({ message: 'Some required fields are missing!' });
     }
 
@@ -240,13 +242,13 @@ router.put('/update-vehicles', authenticateToken, async (req, res) => {
 
     try {
         const existingUser = await User.findOneAndUpdate({ email }, { $set: { vehicles } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
-        if(!existingUser) {
+        if (!existingUser) {
             return res.status(404).json({ message: 'User does not exist!' });
         }
 
         res.status(200).json({ message: 'Vehicles updated', user: existingUser });
     }
-    catch(error) {
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
@@ -257,21 +259,21 @@ router.put('/remove-vehicle', authenticateToken, async (req, res) => {
     const { email } = req.user;
 
     try {
-        const existingUser = await User.findOneAndUpdate({ email },{ $pull: { vehicles: { _id: id } } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+        const existingUser = await User.findOneAndUpdate({ email }, { $pull: { vehicles: { _id: id } } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
 
         if (!existingUser) {
             return res.status(404).json({ message: 'User does not exist!' });
         }
 
         res.status(200).json({ message: 'Vehicle removed successfully', user: existingUser });
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
 
 //add profile-picture
-router.put('/update-profile-picture', authenticateToken, upload.single('profileImage'),  async (req, res) => {
+router.put('/update-profile-picture', authenticateToken, upload.single('profileImage'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
@@ -299,7 +301,7 @@ router.put('/update-profile-picture', authenticateToken, upload.single('profileI
         }
 
         res.status(200).json({ message: 'Profile image updated', user: updatedUser });
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
@@ -311,15 +313,66 @@ router.put('/verify-mechanic/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        const mechanic = await User.findByIdAndUpdate(id, { $set: { verified: true }}, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
-        if(!mechanic) {
+        const mechanic = await User.findByIdAndUpdate(id, { $set: { verified: true } }, { new: true }).select('-passwordHash -createdAt -updatedAt -otp -otpExpiry');
+        if (!mechanic) {
             return res.status(404).json({ message: 'Mechanic does not exist' });
         }
 
         res.status(200).json({ message: 'Mechanic verified successfully', mechanic });
-    }   
-    catch(error) {
+    }
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+//create fcm token
+router.post("/token", authenticateToken, async (req, res) => {
+    const { fcmToken } = req.body;
+    const { _id } = req.user;
+  
+    if (!_id || !fcmToken) {
+        return res.status(400).json({ message: "userId and fcmToken are required" });
+    }
+  
+    try {
+        const user = await User.findByIdAndUpdate(
+            _id,
+            { fcmToken },
+            { new: true }
+        );
+    
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "FCM token updated successfully" });
+    } 
+    catch (err) {
+        console.error("Error saving FCM token:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+//notify route
+router.post('/notify', authenticateToken, async (req, res) => {
+    const { receiverId, content } = req.body;
+    const user = await User.findById(receiverId);
+    if (!user?.fcmToken) return res.status(400).json({ error: "No token" });
+
+    const payload = {
+        token: user.fcmToken,
+        notification: {
+            title: "New Message",
+            body: content,
+        },
+    }
+
+    try {
+        await messaging.send(payload);
+        res.status(200).json({ success: true });
+    } 
+    catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

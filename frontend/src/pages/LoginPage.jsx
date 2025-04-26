@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { Mail, Lock } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
+import { getToken, onMessage } from "firebase/messaging";
+import { messaging } from "../firebase-config"; // adjust path if needed
+
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -25,6 +28,23 @@ const LoginPage = () => {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('user', JSON.stringify(res.data.user));
                 toast.success('Login Successful');
+                console.log('a');
+
+                try {
+                    console.log('b');
+                    const fcmToken = await getToken(messaging, {
+                        vapidKey: "BNeZu6L8hYEv91FL4yAndoZ-jdsymAW76BzTYRuMLSijcaa1GkbXcVnglagQ1FoimXjTZeT2EErBX4haYB9kfcA", // 🔐 replace with actual key
+                    });
+                    console.log('c');
+    
+                    if (fcmToken) {
+                        await axios.post("http://localhost:5000/user/token", { fcmToken }, { withCredentials: true });
+                        console.log("FCM token sent to backend.");
+                    }
+                } 
+                catch (tokenErr) {
+                    console.error("Failed to get/send FCM token:", tokenErr);
+                }
 
                 console.log('a');
                 if(res.data.user.role === 'mechanic') {
