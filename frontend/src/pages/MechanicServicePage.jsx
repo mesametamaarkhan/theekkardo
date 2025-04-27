@@ -32,18 +32,16 @@ const MechanicServicePage = () => {
     const handleStartService = async () => {
         setLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setRequest(prev =>
-                prev
-                    ? {
-                        ...prev,
-                        status: 'in-progress',
-                        startedAt: new Date().toISOString()
-                    }
-                    : null
+            const response = await axios.put(
+                `http://localhost:5000/service-request/update-status/${requestId}`,
+                { status: 'in-progress' },
+                { withCredentials: true }
             );
+
+            setRequest(response.data.serviceRequest);
             toast.success('Service started successfully');
         } catch (error) {
+            console.error(error);
             toast.error('Failed to start service');
         } finally {
             setLoading(false);
@@ -53,18 +51,16 @@ const MechanicServicePage = () => {
     const handleCompleteService = async () => {
         setLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setRequest(prev =>
-                prev
-                    ? {
-                        ...prev,
-                        status: 'completed',
-                        completedAt: new Date().toISOString()
-                    }
-                    : null
+            const response = await axios.put(
+                `http://localhost:5000/service-request/update-status/${requestId}`,
+                { status: 'completed' },
+                { withCredentials: true }
             );
+
+            setRequest(response.data.serviceRequest);
             toast.success('Service completed successfully');
         } catch (error) {
+            console.error(error);
             toast.error('Failed to complete service');
         } finally {
             setLoading(false);
@@ -112,12 +108,12 @@ const MechanicServicePage = () => {
                             request.status === 'pending'
                                 ? "bg-gray-500"
                                 : request.status === 'accepted'
-                                ? "bg-blue-600"
-                                : request.status === 'in-progress'
-                                ? "bg-yellow-600"
-                                : request.status === 'completed'
-                                ? "bg-green-600"
-                                : "bg-red-600"
+                                    ? "bg-blue-600"
+                                    : request.status === 'in-progress'
+                                        ? "bg-yellow-600"
+                                        : request.status === 'completed'
+                                            ? "bg-green-600"
+                                            : "bg-red-600"
                         )}
                     >
                         <div className="flex items-center space-x-2">
@@ -157,6 +153,10 @@ const MechanicServicePage = () => {
                         {/* Service Details */}
                         <div className="border-b pb-6 space-y-4">
                             <h2 className="text-lg font-semibold mb-4">Service Details</h2>
+                            <div>
+                                <span className="text-gray-600">Service Name</span>
+                                <p className="font-medium mt-1">{request.serviceId?.name || 'Service'}</p>
+                            </div>
                             <div>
                                 <span className="text-gray-600">Issue Description</span>
                                 <p className="font-medium mt-1">{request.issueDescription}</p>

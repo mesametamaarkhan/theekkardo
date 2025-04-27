@@ -24,11 +24,11 @@ const UserServicePage = () => {
                     withCredentials: true,
                 });
                 setRequest(response.data.serviceRequest);
-            } 
+            }
             catch (error) {
                 console.error(error);
                 toast.error('Failed to fetch request details');
-            } 
+            }
             finally {
                 setLoading(false);
             }
@@ -133,7 +133,7 @@ const UserServicePage = () => {
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div className="flex items-center space-x-3">
                                         <User className="w-5 h-5 text-gray-400" />
-                                        <span>{request.mechanicId.name || 'Mechanic assigned'}</span>
+                                        <span>{request.mechanicId.fullName || 'Mechanic assigned'}</span>
                                     </div>
                                     {/* If you have mechanic contact details, add here */}
                                 </div>
@@ -162,6 +162,10 @@ const UserServicePage = () => {
                             <h2 className="text-lg font-semibold mb-4">Service Details</h2>
                             <div className="space-y-4">
                                 <div>
+                                    <span className="text-gray-600">Service Name</span>
+                                    <p className="font-medium mt-1">{request.serviceId?.name || 'Service'}</p>
+                                </div>
+                                <div>
                                     <span className="text-gray-600">Issue Description</span>
                                     <p className="font-medium mt-1">{request.issueDescription}</p>
                                 </div>
@@ -175,21 +179,6 @@ const UserServicePage = () => {
                                         <span>{new Date(request.preferredTime).toLocaleString()}</span>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Timeline */}
-                        <div>
-                            <h2 className="text-lg font-semibold mb-4">Service Timeline</h2>
-                            <div className="space-y-4">
-                                <div className="flex items-center space-x-3 text-green-600">
-                                    <CheckCircle className="w-5 h-5" />
-                                    <span>Service Requested</span>
-                                    <span className="text-gray-500 text-sm">
-                                        {new Date(request.createdAt).toLocaleString()}
-                                    </span>
-                                </div>
-                                {/* Optional: if you store when mechanic started/completed */}
                             </div>
                         </div>
 

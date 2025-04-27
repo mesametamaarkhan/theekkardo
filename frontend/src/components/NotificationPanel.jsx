@@ -10,10 +10,9 @@ const NotificationPanel = ({ showNotifications }) => {
                 try {
                     const response = await axios.get('http://localhost:5000/user/unread-notifications', { withCredentials: true });
                     setNotifications(response.data.notifications);
-                    console.log(notifications);
                 } catch (error) {
                     console.error("Error fetching notifications", error);
-                    setNotifications([]); // If error, clear notifications
+                    setNotifications([]);
                 }
             };
 
