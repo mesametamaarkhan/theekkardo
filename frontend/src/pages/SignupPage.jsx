@@ -63,7 +63,7 @@ const SignupPage = () => {
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
                     <p className="text-gray-600">Join Theekkardo today</p>
                 </div>
-
+                
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-3 gap-4 mb-6">
                         {["user", "mechanic"].map((roleType) => (
