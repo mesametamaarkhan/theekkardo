@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Clock, AlertTriangle, Star, CheckCircle, Calendar, Timer, Loader2, User, Phone, X, Send } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import clsx from 'clsx';
+import axios from 'axios'; // You forgot to import axios!
 
 const UserServicePage = () => {
     const { requestId } = useParams();
@@ -19,32 +20,16 @@ const UserServicePage = () => {
         const fetchRequest = async () => {
             setLoading(true);
             try {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                setRequest({
-                    id: requestId,
-                    mechanic: {
-                        id: '123',
-                        name: 'Mike Johnson',
-                        phone: '+1 (555) 987-6543',
-                        rating: 4.8
-                    },
-                    vehicle: {
-                        make: 'Toyota',
-                        model: 'Camry',
-                        year: 2020,
-                        plateNumber: 'ABC123'
-                    },
-                    issue: "Car won't start, possibly battery related issue",
-                    location: '123 Main St, New York',
-                    createdAt: new Date().toISOString(),
-                    isEmergency: true,
-                    preferredTime: '2024-03-20T10:00:00Z',
-                    status: 'in_progress',
-                    startedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString()
+                const response = await axios.get(`http://localhost:5000/service-request/${requestId}`, {
+                    withCredentials: true,
                 });
-            } catch (error) {
+                setRequest(response.data.serviceRequest);
+            } 
+            catch (error) {
+                console.error(error);
                 toast.error('Failed to fetch request details');
-            } finally {
+            } 
+            finally {
                 setLoading(false);
             }
         };
@@ -102,7 +87,6 @@ const UserServicePage = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <Toaster position="top-right" />
-
             <div className="max-w-4xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -114,21 +98,23 @@ const UserServicePage = () => {
                             'px-6 py-3 text-white flex items-center justify-between',
                             request.status === 'accepted'
                                 ? 'bg-blue-600'
-                                : request.status === 'in_progress'
+                                : request.status === 'in-progress'
                                     ? 'bg-yellow-600'
-                                    : 'bg-green-600'
+                                    : request.status === 'completed'
+                                        ? 'bg-green-600'
+                                        : 'bg-gray-600'
                         )}
                     >
                         <div className="flex items-center space-x-2">
                             {request.status === 'accepted' ? (
                                 <Clock className="w-5 h-5" />
-                            ) : request.status === 'in_progress' ? (
+                            ) : request.status === 'in-progress' ? (
                                 <Timer className="w-5 h-5" />
                             ) : (
                                 <CheckCircle className="w-5 h-5" />
                             )}
                             <span className="font-medium capitalize">
-                                {request.status === 'in_progress' ? 'Work in Progress' : request.status}
+                                {request.status.replace('-', ' ')}
                             </span>
                         </div>
                         {request.isEmergency && (
@@ -141,25 +127,18 @@ const UserServicePage = () => {
 
                     <div className="p-6 space-y-6">
                         {/* Mechanic Info */}
-                        <div className="border-b pb-6">
-                            <h2 className="text-lg font-semibold mb-4">Mechanic Information</h2>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="flex items-center space-x-3">
-                                    <User className="w-5 h-5 text-gray-400" />
-                                    <span>{request.mechanic.name}</span>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <Phone className="w-5 h-5 text-gray-400" />
-                                    <a href={`tel:${request.mechanic.phone}`} className="text-blue-600 hover:text-blue-800">
-                                        {request.mechanic.phone}
-                                    </a>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Star className="w-5 h-5 text-yellow-400" />
-                                    <span>{request.mechanic.rating} rating</span>
+                        {request.mechanicId && (
+                            <div className="border-b pb-6">
+                                <h2 className="text-lg font-semibold mb-4">Mechanic Information</h2>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="flex items-center space-x-3">
+                                        <User className="w-5 h-5 text-gray-400" />
+                                        <span>{request.mechanicId.name || 'Mechanic assigned'}</span>
+                                    </div>
+                                    {/* If you have mechanic contact details, add here */}
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Vehicle Details */}
                         <div className="border-b pb-6">
@@ -184,12 +163,12 @@ const UserServicePage = () => {
                             <div className="space-y-4">
                                 <div>
                                     <span className="text-gray-600">Issue Description</span>
-                                    <p className="font-medium mt-1">{request.issue}</p>
+                                    <p className="font-medium mt-1">{request.issueDescription}</p>
                                 </div>
                                 <div className="flex items-center space-x-4">
                                     <div className="flex items-center space-x-2">
                                         <MapPin className="w-5 h-5 text-gray-400" />
-                                        <span>{request.location}</span>
+                                        <span>Lat: {request.location.lat}, Lng: {request.location.lng}</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <Calendar className="w-5 h-5 text-gray-400" />
@@ -205,29 +184,12 @@ const UserServicePage = () => {
                             <div className="space-y-4">
                                 <div className="flex items-center space-x-3 text-green-600">
                                     <CheckCircle className="w-5 h-5" />
-                                    <span>Service Accepted</span>
+                                    <span>Service Requested</span>
                                     <span className="text-gray-500 text-sm">
                                         {new Date(request.createdAt).toLocaleString()}
                                     </span>
                                 </div>
-                                {request.startedAt && (
-                                    <div className="flex items-center space-x-3 text-blue-600">
-                                        <Timer className="w-5 h-5" />
-                                        <span>Work Started</span>
-                                        <span className="text-gray-500 text-sm">
-                                            {new Date(request.startedAt).toLocaleString()}
-                                        </span>
-                                    </div>
-                                )}
-                                {request.completedAt && (
-                                    <div className="flex items-center space-x-3 text-green-600">
-                                        <CheckCircle className="w-5 h-5" />
-                                        <span>Service Completed</span>
-                                        <span className="text-gray-500 text-sm">
-                                            {new Date(request.completedAt).toLocaleString()}
-                                        </span>
-                                    </div>
-                                )}
+                                {/* Optional: if you store when mechanic started/completed */}
                             </div>
                         </div>
 

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, AlertTriangle, PlayCircle, CheckCircle, Calendar, Timer, Loader2, User, Phone } from 'lucide-react';
+import { MapPin, Clock, AlertTriangle, PlayCircle, CheckCircle, Calendar, Timer, Loader2, User, Phone, DollarSign, Flag } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import clsx from 'clsx';
+import axios from 'axios';
 
 const MechanicServicePage = () => {
     const { requestId } = useParams();
@@ -15,28 +16,11 @@ const MechanicServicePage = () => {
         const fetchRequest = async () => {
             setLoading(true);
             try {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                setRequest({
-                    id: requestId,
-                    customer: {
-                        name: "John Smith",
-                        phone: "+1 (555) 123-4567"
-                    },
-                    vehicle: {
-                        make: "Toyota",
-                        model: "Camry",
-                        year: 2020,
-                        plateNumber: "ABC123"
-                    },
-                    issue: "Car won't start, possibly battery related issue",
-                    location: "123 Main St, New York",
-                    createdAt: new Date().toISOString(),
-                    isEmergency: true,
-                    preferredTime: "2024-03-20T10:00:00Z",
-                    status: 'accepted'
-                });
+                const response = await axios.get(`http://localhost:5000/service-request/${requestId}`, { withCredentials: true });
+                setRequest(response.data.serviceRequest);
             } catch (error) {
-                toast.error('Failed to fetch request details');
+                console.error(error);
+                toast.error('Failed to fetch service request');
             } finally {
                 setLoading(false);
             }
@@ -53,7 +37,7 @@ const MechanicServicePage = () => {
                 prev
                     ? {
                         ...prev,
-                        status: 'in_progress',
+                        status: 'in-progress',
                         startedAt: new Date().toISOString()
                     }
                     : null
@@ -125,23 +109,25 @@ const MechanicServicePage = () => {
                     <div
                         className={clsx(
                             "px-6 py-3 text-white flex items-center justify-between",
-                            request.status === 'accepted'
+                            request.status === 'pending'
+                                ? "bg-gray-500"
+                                : request.status === 'accepted'
                                 ? "bg-blue-600"
-                                : request.status === 'in_progress'
-                                    ? "bg-yellow-600"
-                                    : "bg-green-600"
+                                : request.status === 'in-progress'
+                                ? "bg-yellow-600"
+                                : request.status === 'completed'
+                                ? "bg-green-600"
+                                : "bg-red-600"
                         )}
                     >
                         <div className="flex items-center space-x-2">
-                            {request.status === 'accepted' ? (
-                                <Clock className="w-5 h-5" />
-                            ) : request.status === 'in_progress' ? (
-                                <Timer className="w-5 h-5" />
-                            ) : (
-                                <CheckCircle className="w-5 h-5" />
-                            )}
+                            {request.status === 'pending' && <Clock className="w-5 h-5" />}
+                            {request.status === 'accepted' && <Clock className="w-5 h-5" />}
+                            {request.status === 'in-progress' && <Timer className="w-5 h-5" />}
+                            {request.status === 'completed' && <CheckCircle className="w-5 h-5" />}
+                            {request.status === 'canceled' && <AlertTriangle className="w-5 h-5" />}
                             <span className="font-medium capitalize">
-                                {request.status.replace('_', ' ')}
+                                {request.status.replace('-', ' ')}
                             </span>
                         </div>
                         {request.isEmergency && (
@@ -153,32 +139,13 @@ const MechanicServicePage = () => {
                     </div>
 
                     <div className="p-6 space-y-6">
-                        {/* Customer Info */}
-                        <div className="border-b pb-6">
-                            <h2 className="text-lg font-semibold mb-4">Customer Information</h2>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="flex items-center space-x-3">
-                                    <User className="w-5 h-5 text-gray-400" />
-                                    <span>{request.customer.name}</span>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <Phone className="w-5 h-5 text-gray-400" />
-                                    <a href={`tel:${request.customer.phone}`} className="text-blue-600 hover:text-blue-800">
-                                        {request.customer.phone}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Vehicle Details */}
                         <div className="border-b pb-6">
                             <h2 className="text-lg font-semibold mb-4">Vehicle Details</h2>
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-gray-600">Vehicle</span>
-                                    <p className="font-medium">
-                                        {request.vehicle.make} {request.vehicle.model} {request.vehicle.year}
-                                    </p>
+                                    <span className="text-gray-600">Make & Model</span>
+                                    <p className="font-medium">{request.vehicle.make} {request.vehicle.model} ({request.vehicle.year})</p>
                                 </div>
                                 <div>
                                     <span className="text-gray-600">Plate Number</span>
@@ -188,23 +155,38 @@ const MechanicServicePage = () => {
                         </div>
 
                         {/* Service Details */}
-                        <div className="border-b pb-6">
+                        <div className="border-b pb-6 space-y-4">
                             <h2 className="text-lg font-semibold mb-4">Service Details</h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <span className="text-gray-600">Issue Description</span>
-                                    <p className="font-medium mt-1">{request.issue}</p>
+                            <div>
+                                <span className="text-gray-600">Issue Description</span>
+                                <p className="font-medium mt-1">{request.issueDescription}</p>
+                            </div>
+                            <div className="flex flex-col md:flex-row md:items-center md:space-x-6 space-y-4 md:space-y-0">
+                                <div className="flex items-center space-x-2">
+                                    <MapPin className="w-5 h-5 text-gray-400" />
+                                    <a
+                                        href={`https://maps.google.com/?q=${request.location.lat},${request.location.lng}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800"
+                                    >
+                                        View Location
+                                    </a>
                                 </div>
-                                <div className="flex items-center space-x-4">
-                                    <div className="flex items-center space-x-2">
-                                        <MapPin className="w-5 h-5 text-gray-400" />
-                                        <span>{request.location}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Calendar className="w-5 h-5 text-gray-400" />
-                                        <span>{new Date(request.preferredTime).toLocaleString()}</span>
-                                    </div>
+                                <div className="flex items-center space-x-2">
+                                    <Calendar className="w-5 h-5 text-gray-400" />
+                                    <span>{new Date(request.preferredTime).toLocaleString()}</span>
                                 </div>
+                                <div className="flex items-center space-x-2">
+                                    <Flag className="w-5 h-5 text-gray-400" />
+                                    <span className="capitalize">{request.priority} Priority</span>
+                                </div>
+                                {request.finalPrice && (
+                                    <div className="flex items-center space-x-2">
+                                        <DollarSign className="w-5 h-5 text-gray-400" />
+                                        <span>${request.finalPrice}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -224,7 +206,7 @@ const MechanicServicePage = () => {
                                     <span>Start Service</span>
                                 </button>
                             )}
-                            {request.status === 'in_progress' && (
+                            {request.status === 'in-progress' && (
                                 <button
                                     onClick={handleCompleteService}
                                     disabled={loading}
