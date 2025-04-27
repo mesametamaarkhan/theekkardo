@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
-import { UserRoutes, OTPRoutes, ServiceRoutes, EmergencyRequestRoutes, PaymentRoutes, ReviewRoutes, ServiceRequestRoutes, TrackingRoutes } from './routes/index.js';
+import { AdminRoutes, UserRoutes, OTPRoutes, ServiceRoutes, EmergencyRequestRoutes, PaymentRoutes, ReviewRoutes, ServiceRequestRoutes, TrackingRoutes } from './routes/index.js';
 
 dotenv.config();
 const app = express();
@@ -15,6 +15,7 @@ app.use(cors({
     credentials: true 
 }));
 
+app.use('/admin', AdminRoutes);
 app.use('/user', UserRoutes);
 app.use('/otp', OTPRoutes);
 app.use('/service', ServiceRoutes);

@@ -33,14 +33,14 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 });
 
-//get all service requests (need to limit info here)
-//adming only route
+//get all service requests
 router.get('/', authenticateToken, async (req, res) => {
     try {
-        const serviceRequests = await ServiceRequest.find();
+        const serviceRequests = await ServiceRequest.find()
+            .sort({ createdAt: -1 }); // 🔥 Sort newest first
         res.status(200).json({ serviceRequests });
     }
-    catch(error) {
+    catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });

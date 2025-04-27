@@ -13,6 +13,7 @@ import BidsPage from './pages/BidsPage';
 import MechanicRequestsPage from './pages/MechanicRequestsPage';
 import MechanicServicePage from './pages/MechanicServicePage';
 import UserServicePage from './pages/UserServicePage';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
 	useEffect(() => {
@@ -39,6 +40,7 @@ function App() {
 				<Route path="/login" element={<LoginPage />} />
 				<Route path="/signup" element={<SignupPage />} />
 				<Route path="/forgot-password" element={<ForgotPasswordPage />} />
+				<Route path="/admin" element={<AdminDashboard />} />
 				<Route path="/profile" element={<ProfilePage />} />
 				<Route path="/bids/:requestId" element={<BidsPage />} />
 				<Route path="/mechanic/requests" element={<MechanicRequestsPage />} />

@@ -66,7 +66,7 @@ const SignupPage = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                        {["user", "mechanic", "admin"].map((roleType) => (
+                        {["user", "mechanic"].map((roleType) => (
                             <button
                                 key={roleType}
                                 type="button"
