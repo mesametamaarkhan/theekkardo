@@ -1,6 +1,6 @@
 import express from 'express';
 import authenticateToken from '../middleware/AuthenticateToken.js';
-import { notifyMechanicsAboutService, notifyUsersAboutBid, notifyMechanicAboutBidAcceptance } from '../services/NotificationService.js';
+import { notifyMechanicsAboutService, notifyUsersAboutBid, notifyMechanicAboutBidAcceptance, notifyUserAboutServiceStart, notifyUserAboutServiceCompletion } from '../services/NotificationService.js';
 import { ServiceRequest } from '../models/ServiceRequest.js';
 import { Bid } from '../models/Bid.js';
 
@@ -120,6 +120,13 @@ router.put('/update-status/:id', authenticateToken, async (req, res) => {
 
         if(!updatedServiceRequest) {
             return res.status(404).json({ message: 'Service request not found!' });
+        }
+
+        if(status === 'completed') {
+            await notifyUserAboutServiceCompletion(updatedServiceRequest);
+        }
+        else if(status === 'in-progress') {
+            await notifyUserAboutServiceStart(updatedServiceRequest);
         }
 
         res.status(200).json({ message: 'Service request updated', serviceRequest: updatedServiceRequest });
