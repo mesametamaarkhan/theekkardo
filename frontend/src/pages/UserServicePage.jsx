@@ -46,19 +46,30 @@ const UserServicePage = () => {
             toast.error('Please select a rating');
             return;
         }
-
+    
         setLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await axios.post(`http://localhost:5000/review/`, {
+                mechanicId: request.mechanicId._id, // Assuming mechanicId is an object with _id
+                serviceRequestId: request._id,             // Assuming request._id exists
+                rating,
+                review,
+            }, {
+                withCredentials: true,
+            });
+    
             toast.success('Review submitted successfully!');
             setShowRatingModal(false);
             navigate('/profile');
-        } catch (error) {
+        } 
+        catch (error) {
+            console.error(error);
             toast.error('Failed to submit review');
-        } finally {
+        } 
+        finally {
             setLoading(false);
         }
-    };
+    };    
 
     if (loading) {
         return (

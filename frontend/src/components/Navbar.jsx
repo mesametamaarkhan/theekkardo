@@ -5,11 +5,17 @@ import NotificationPanel from './NotificationPanel';
 
 const Navbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isMechanic, setIsMechanic] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
 
     useEffect(() => {
         const loggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
         setIsLoggedIn(loggedIn);
+
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        if (user && user.role === 'mechanic') {
+            setIsMechanic(true);
+        }
     }, []);
 
     const toggleNotifications = () => {
@@ -24,8 +30,18 @@ const Navbar = () => {
                         <Link to="/" className="text-2xl font-bold text-blue-600">Theekkardo</Link>
                     </div>
                     <div className="hidden md:flex items-center space-x-6">
-                        <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
-                        <a href="#features" className="text-gray-700 hover:text-blue-600">Features</a>
+                        {/* Home Link */}
+                        <Link to={isMechanic ? '/mechanic/requests' : '/'} className="text-gray-700 hover:text-blue-600">
+                            Home
+                        </Link>
+
+                        {/* Features (hide for mechanics) */}
+                        {!isMechanic && (
+                            <a href="#features" className="text-gray-700 hover:text-blue-600">
+                                Features
+                            </a>
+                        )}
+
                         {isLoggedIn ? (
                             <div className="flex items-center space-x-4 relative">
                                 <div className="relative">
@@ -52,6 +68,7 @@ const Navbar = () => {
                             </div>
                         )}
                     </div>
+
                     {/* Mobile menu button */}
                     <div className="md:hidden flex items-center">
                         <button className="text-gray-700">
