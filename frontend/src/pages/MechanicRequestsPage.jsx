@@ -20,6 +20,10 @@ const MechanicRequestsPage = () => {
     useEffect(() => {
         const loggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
         setIsLoggedIn(loggedIn);
+        if (!loggedIn) {
+            toast.error('Please login to access this page');
+            navigate('/login');
+        }
         
         const fetchRequests = async () => {
             setLoading(true);

@@ -45,6 +45,12 @@ const BidsPage = () => {
 
 
     useEffect(() => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        if (!isLoggedIn) {
+            toast.error('Please login to access this page');
+            navigate('/login');
+        }
+        
         const fetchBids = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/service-request/bids/${requestId}`, { withCredentials: true });
@@ -77,7 +83,7 @@ const BidsPage = () => {
 
     const confirmAcceptBid = async () => {
         if (!selectedBid) return;
-    
+
         setLoading(true);
         try {
             const response = await axios.put(
@@ -85,25 +91,25 @@ const BidsPage = () => {
                 {},
                 { withCredentials: true }
             );
-    
+
             if (response.status === 200) {
                 toast.success('Bid accepted successfully! The mechanic has been notified.');
                 setShowConfirmModal(false);
                 navigate(`/service/${requestId}`);
-            } 
+            }
             else {
                 toast.error('Failed to accept the bid. Please try again.');
             }
-        } 
+        }
         catch (error) {
             console.error('Error accepting bid:', error);
             toast.error('An error occurred. Please try again.');
-        } 
+        }
         finally {
             setLoading(false);
         }
     };
-    
+
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

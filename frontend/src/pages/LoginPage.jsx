@@ -43,9 +43,11 @@ const LoginPage = () => {
                     console.error("Failed to get/send FCM token:", tokenErr);
                 }
 
-                console.log('a');
                 if(res.data.user.role === 'mechanic') {
                     navigate('/mechanic/requests');
+                }
+                else if(res.data.user.role === 'admin') {
+                    navigate('/admin');
                 }
                 else {
                     window.location.href = '/';

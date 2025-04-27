@@ -13,6 +13,12 @@ const MechanicServicePage = () => {
     const [request, setRequest] = useState(null);
 
     useEffect(() => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        if (!isLoggedIn) {
+            toast.error('Please login to access this page');
+            navigate('/login');
+        }
+
         const fetchRequest = async () => {
             setLoading(true);
             try {

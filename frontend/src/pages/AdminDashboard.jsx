@@ -4,8 +4,10 @@ import { Users, Wrench, UserCheck, Shield, Trash2, AlertTriangle, CheckCircle, S
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import clsx from 'clsx';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -20,8 +22,14 @@ const AdminDashboard = () => {
         totalRevenue: 0,
     });
 
-    // Fetch users + stats
     useEffect(() => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        if (!isLoggedIn || user.role !== 'admin') {
+            toast.error('Please login to access this page');
+            navigate('/login');
+        }
+
         const fetchData = async () => {
             try {
                 const [usersRes, statsRes] = await Promise.all([
@@ -32,7 +40,6 @@ const AdminDashboard = () => {
                 const fetchedUsers = usersRes.data.users;
                 setUsers(fetchedUsers);
 
-                // Separate counts
                 const totalMechanics = fetchedUsers.filter(u => u.role === 'mechanic').length;
                 const totalNormalUsers = fetchedUsers.filter(u => u.role === 'user').length;
 
@@ -52,7 +59,6 @@ const AdminDashboard = () => {
         fetchData();
     }, []);
 
-
     const handleAction = (user, action) => {
         setSelectedUser(user);
         setActionType(action);
@@ -64,20 +70,27 @@ const AdminDashboard = () => {
 
         setLoading(true);
         try {
-            // Placeholder action: replace with real API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            if (actionType === 'remove') {
+                await axios.delete(`http://localhost:5000/admin/users/${selectedUser._id}`, { withCredentials: true });
 
-            toast.success(`${selectedUser.fullName} has been ${actionType === 'remove' ? 'removed' : 'promoted to admin'}`);
+                toast.success(`${selectedUser.fullName} has been removed successfully!`);
+                setUsers(prevUsers => prevUsers.filter(user => user._id !== selectedUser._id));
+            } else if (actionType === 'approve') {
+                await axios.put(`http://localhost:5000/admin/approve-admin/${selectedUser._id}`, {}, { withCredentials: true });
+
+                toast.success(`${selectedUser.fullName}'s admin request approved!`);
+                setUsers(prevUsers => prevUsers.map(user =>
+                    user._id === selectedUser._id ? { ...user, status: 'approved' } : user
+                ));
+            }
+
             setShowConfirmModal(false);
         } catch (error) {
+            console.error('Action failed:', error);
             toast.error('Action failed. Please try again.');
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleLogout = () => {
-        // Implement logout logic
     };
 
     const filteredUsers = users.filter(user =>
@@ -118,7 +131,7 @@ const AdminDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <Toaster position="top-right" />
-            
+
             {/* Main */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Stats */}

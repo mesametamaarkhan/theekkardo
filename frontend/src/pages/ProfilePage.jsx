@@ -43,6 +43,12 @@ const ProfilePage = () => {
     });
 
     useEffect(() => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        if (!isLoggedIn) {
+            toast.error('Please login to access this page');
+            navigate('/login');
+        }
+
         const fetchProfile = async () => {
             try {
                 const res = await axios.get('http://localhost:5000/user/profile', { withCredentials: true });

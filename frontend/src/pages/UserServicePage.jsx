@@ -17,6 +17,12 @@ const UserServicePage = () => {
     const [hoveredStar, setHoveredStar] = useState(0);
 
     useEffect(() => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        if (!isLoggedIn) {
+            toast.error('Please login to access this page');
+            navigate('/login');
+        }
+        
         const fetchRequest = async () => {
             setLoading(true);
             try {
