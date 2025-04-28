@@ -29,7 +29,6 @@ const LoginPage = () => {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('user', JSON.stringify(res.data.user));
                 toast.success('Login Successful');
-                console.log(res.cookie);
 
                 try {
                     const fcmToken = await getToken(messaging, {
