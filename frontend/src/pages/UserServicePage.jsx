@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Clock, AlertTriangle, Star, CheckCircle, Calendar, Timer, Loader2, User, Phone, X, Send } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import clsx from 'clsx';
-import axios from 'axios'; // You forgot to import axios!
+import axios from 'axios'; 
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const UserServicePage = () => {
     const { requestId } = useParams();
@@ -26,7 +28,7 @@ const UserServicePage = () => {
         const fetchRequest = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:5000/service-request/${requestId}`, {
+                const response = await axios.get(`${API_BASE_URL}/service-request/${requestId}`, {
                     withCredentials: true,
                 });
                 setRequest(response.data.serviceRequest);
@@ -55,9 +57,9 @@ const UserServicePage = () => {
     
         setLoading(true);
         try {
-            await axios.post(`http://localhost:5000/review/`, {
-                mechanicId: request.mechanicId._id, // Assuming mechanicId is an object with _id
-                serviceRequestId: request._id,             // Assuming request._id exists
+            await axios.post(`${API_BASE_URL}/review/`, {
+                mechanicId: request.mechanicId._id, 
+                serviceRequestId: request._id,             
                 rating,
                 review,
             }, {

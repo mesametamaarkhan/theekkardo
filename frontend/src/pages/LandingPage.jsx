@@ -5,6 +5,8 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { MapPin, Shield, Clock, AlertCircle, X, Calendar, Loader2 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const LandingPage = () => {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,6 +23,7 @@ const LandingPage = () => {
         issueDescription: '',
         preferredTime: '',
     });
+
     const features = [
         {
             icon: <Clock className="w-8 h-8 text-blue-500" />,
@@ -64,7 +67,7 @@ const LandingPage = () => {
         setIsLoggedIn(loggedIn);
 
         const getServices = () => {
-            axios.get('http://localhost:5000/service')
+            axios.get(`${API_BASE_URL}/service`)
                 .then(response => {
                     setServices(response.data.services);
                 })
@@ -109,7 +112,7 @@ const LandingPage = () => {
         try {
             const [lat, lng] = userLocation.split(',').map(coord => parseFloat(coord.trim()));
 
-            const response = await axios.post('http://localhost:5000/service-request/', {
+            const response = await axios.post(`${API_BASE_URL}/service-request/`, {
                 serviceId: selectedService._id,
                 vehicle: {
                     make: serviceRequest.make,

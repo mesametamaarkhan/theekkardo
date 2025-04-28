@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const ForgotPasswordPage = () => {
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState('');
@@ -36,12 +38,12 @@ const ForgotPasswordPage = () => {
 
         try {
             if (step === 1) {
-                const res = await axios.post('http://localhost:5000/otp/generate', { email });
+                const res = await axios.post(`${API_BASE_URL}/otp/generate`, { email });
                 if (res.status === 200) setStep(2);
             }
             else if (step === 2) {
                 console.log(otp.join(''));
-                const res = await axios.post('http://localhost:5000/otp/verify', { email, otp: otp.join('') });
+                const res = await axios.post(`${API_BASE_URL}/otp/verify`, { email, otp: otp.join('') });
                 if (res.status === 200) setStep(3);
             }
             else if (step === 3) {
@@ -49,7 +51,7 @@ const ForgotPasswordPage = () => {
                     setError("Passwords do not match.");
                     return;
                 }
-                const res = await axios.put('http://localhost:5000/user/reset-password', { email, newPassword });
+                const res = await axios.put(`${API_BASE_URL}/user/reset-password`, { email, newPassword });
                 if (res.status === 200) {
                     alert('Password reset successfully! Redirecting to login.');
                     window.location.href = '/login';

@@ -101,7 +101,7 @@ CLOUDINARY_API_SECRET=your_cloudinary_secret_key
 
 Create a `.env` file in the `frontend/` directory and add:
 ```sh
-SERVER_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5000
 ```
 
 ---

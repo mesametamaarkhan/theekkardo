@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Menu, User, Bell, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import NotificationPanel from './NotificationPanel';
+import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const Navbar = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [isMechanic, setIsMechanic] = useState(false);
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [showNotifications, setShowNotifications] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -28,7 +33,7 @@ const Navbar = () => {
 
 	const handleLogout = async () => {
 		try {
-			const res = await axios.post('http://localhost:5000/user/logout', {}, { withCredentials: true });
+			const res = await axios.post(`${API_BASE_URL}/user/logout`, {}, { withCredentials: true });
 
 			if (res.status === 200) {
 				sessionStorage.setItem('isLoggedIn', 'false');

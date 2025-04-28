@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const NotificationPanel = ({ showNotifications }) => {
     const [notifications, setNotifications] = useState([]);
 
@@ -8,7 +10,7 @@ const NotificationPanel = ({ showNotifications }) => {
         if (showNotifications) {
             const fetchNotifications = async () => {
                 try {
-                    const response = await axios.get('http://localhost:5000/user/unread-notifications', { withCredentials: true });
+                    const response = await axios.get(`${API_BASE_URL}/user/unread-notifications`, { withCredentials: true });
                     setNotifications(response.data.notifications);
                 } catch (error) {
                     console.error("Error fetching notifications", error);
@@ -22,7 +24,7 @@ const NotificationPanel = ({ showNotifications }) => {
 
     const handleNotificationClick = async (notificationId, linkToPage) => {
         try {
-            await axios.put(`http://localhost:5000/user/notification/${notificationId}`, {}, { withCredentials: true });
+            await axios.put(`${API_BASE_URL}/user/notification/${notificationId}`, {}, { withCredentials: true });
             window.location.href = linkToPage;
         } catch (error) {
             console.error("Error marking notification as read", error);

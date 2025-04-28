@@ -5,6 +5,8 @@ import axios from 'axios';
 import { Star, CheckCircle, MessageSquare, Loader2, } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const BidsPage = () => {
     const { requestId } = useParams();
     const navigate = useNavigate();
@@ -53,7 +55,7 @@ const BidsPage = () => {
         
         const fetchBids = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/service-request/bids/${requestId}`, { withCredentials: true });
+                const response = await axios.get(`${API_BASE_URL}/service-request/bids/${requestId}`, { withCredentials: true });
 
                 if (response.status === 200) {
                     setBids(response.data.bids);
@@ -87,7 +89,7 @@ const BidsPage = () => {
         setLoading(true);
         try {
             const response = await axios.put(
-                `http://localhost:5000/service-request/accept-bid/${selectedBid._id}`,
+                `${API_BASE_URL}/service-request/accept-bid/${selectedBid._id}`,
                 {},
                 { withCredentials: true }
             );

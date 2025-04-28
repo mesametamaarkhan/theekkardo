@@ -7,6 +7,7 @@ import axios from 'axios';
 import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "../firebase-config"; // adjust path if needed
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const LoginPage = () => {
         setLoading(false);
 
         try {
-            const res = await axios.post('http://localhost:5000/user/login', { email, password }, { withCredentials: true });
+            const res = await axios.post(`${API_BASE_URL}/user/login`, { email, password }, { withCredentials: true });
 
             if (res.status === 200) {
                 sessionStorage.setItem('isLoggedIn', 'true');
@@ -35,7 +36,7 @@ const LoginPage = () => {
                     });
     
                     if (fcmToken) {
-                        await axios.post("http://localhost:5000/user/token", { fcmToken }, { withCredentials: true });
+                        await axios.post(`${API_BASE_URL}/user/token`, { fcmToken }, { withCredentials: true });
                         console.log("FCM token sent to backend.");
                     }
                 } 

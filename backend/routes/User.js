@@ -186,6 +186,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
 //update user profile
 router.put('/update-profile', authenticateToken, async (req, res) => {
     if (!req.body.fullName || !req.body.phone) {
+        console.log(req.body);
         return res.status(400).json({ message: 'Some required fields are missing' });
     }
 

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, Phone } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const SignupPage = () => {
     const [role, setRole] = useState('user');
     const [error, setError] = useState('');
@@ -33,7 +35,7 @@ const SignupPage = () => {
         }
 
         try {
-            const res = await axios.post('http://localhost:5000/user/signup', formData);
+            const res = await axios.post(`${API_BASE_URL}/user/signup`, formData);
             if (res.status === 200) {
                 alert('Signup Successful! Redirecting to login...');
                 window.location.href = '/login';

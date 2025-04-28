@@ -6,6 +6,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Camera, Shield, Star, Car, Plus, Trash2, Edit2, CheckCircle2, LogOut, Loader2, BadgeCheck, X } from 'lucide-react';
 import clsx from 'clsx';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const ProfilePage = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
@@ -51,7 +53,7 @@ const ProfilePage = () => {
 
         const fetchProfile = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/user/profile', { withCredentials: true });
+                const res = await axios.get(`${API_BASE_URL}/user/profile`, { withCredentials: true });
                 if (res.status === 200) {
                     setProfile(res.data.user);
                 }
@@ -74,7 +76,7 @@ const ProfilePage = () => {
         setLoading(true);
         try {
             // Simulate API call
-            const res = await axios.put('http://localhost:5000/user/update-profile', { fullName: profile.fullName, phone: profile.phone }, { withCredentials: true });
+            const res = await axios.put(`${API_BASE_URL}/user/update-profile`, { fullName: profile.fullName, phone: profile.phone }, { withCredentials: true });
 
             if (res.status === 200) {
                 toast.success('Profile updated successfully!');
@@ -97,7 +99,7 @@ const ProfilePage = () => {
         setLoading(true);
 
         try {
-            const res = await axios.put('http://localhost:5000/user/change-password', { currPassword: passwords.old, newPassword: passwords.new }, { withCredentials: true });
+            const res = await axios.put(`${API_BASE_URL}/user/change-password`, { currPassword: passwords.old, newPassword: passwords.new }, { withCredentials: true });
 
             if (res.status === 200) {
                 toast.success('Profile updated successfully!');
@@ -114,7 +116,7 @@ const ProfilePage = () => {
 
     const handleLogout = async () => {
         try {
-            const res = await axios.post('http://localhost:5000/user/logout', {}, { withCredentials: true });
+            const res = await axios.post(`${API_BASE_URL}/user/logout`, {}, { withCredentials: true });
 
             if (res.status === 200) {
                 sessionStorage.setItem('isLoggedIn', 'false');
@@ -145,7 +147,7 @@ const ProfilePage = () => {
 
         setLoading(true);
         try {
-            const res = await axios.put('http://localhost:5000/user/update-vehicles', { vehicles: [...profile.vehicles, newVehicle] }, { withCredentials: true });
+            const res = await axios.put(`${API_BASE_URL}/user/update-vehicles`, { vehicles: [...profile.vehicles, newVehicle] }, { withCredentials: true });
 
             if (res.status === 200) {
                 toast.success('Vehicle added successfully');
@@ -167,7 +169,7 @@ const ProfilePage = () => {
     const handleDeleteVehicle = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.put('http://localhost:5000/user/remove-vehicle', { id }, { withCredentials: true });
+            const res = await axios.put(`${API_BASE_URL}/user/remove-vehicle`, { id }, { withCredentials: true });
 
             if (res.status === 200) {
                 toast.success('Vehicle removed successfully');
@@ -196,7 +198,7 @@ const ProfilePage = () => {
 
         try {
             const res = await axios.put(
-                'http://localhost:5000/user/update-profile-picture',
+                `${API_BASE_URL}/user/update-profile-picture`,
                 formData,
                 {
                     headers: { 'Content-Type': 'multipart/form-data' },

@@ -6,6 +6,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import clsx from 'clsx';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -33,8 +35,8 @@ const AdminDashboard = () => {
         const fetchData = async () => {
             try {
                 const [usersRes, statsRes] = await Promise.all([
-                    axios.get('http://localhost:5000/admin/users', { withCredentials: true }),
-                    axios.get('http://localhost:5000/admin/service-requests/', { withCredentials: true })
+                    axios.get(`${API_BASE_URL}/admin/users`, { withCredentials: true }),
+                    axios.get(`${API_BASE_URL}/admin/service-requests/`, { withCredentials: true })
                 ]);
 
                 const fetchedUsers = usersRes.data.users;
@@ -71,12 +73,12 @@ const AdminDashboard = () => {
         setLoading(true);
         try {
             if (actionType === 'remove') {
-                await axios.delete(`http://localhost:5000/admin/users/${selectedUser._id}`, { withCredentials: true });
+                await axios.delete(`${API_BASE_URL}/admin/users/${selectedUser._id}`, { withCredentials: true });
 
                 toast.success(`${selectedUser.fullName} has been removed successfully!`);
                 setUsers(prevUsers => prevUsers.filter(user => user._id !== selectedUser._id));
             } else if (actionType === 'approve') {
-                await axios.put(`http://localhost:5000/admin/approve-admin/${selectedUser._id}`, {}, { withCredentials: true });
+                await axios.put(`${API_BASE_URL}/admin/approve-admin/${selectedUser._id}`, {}, { withCredentials: true });
 
                 toast.success(`${selectedUser.fullName}'s admin request approved!`);
                 setUsers(prevUsers => prevUsers.map(user =>

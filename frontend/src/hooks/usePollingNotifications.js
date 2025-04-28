@@ -6,7 +6,7 @@ const usePollingNotifications = () => {
     
     const fetchNotifications = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/unread-notifications'); // adjust API route as needed
+            const response = await axios.get('${API_BASE_URL}/unread-notifications'); // adjust API route as needed
             setNotifications(response.data);
         } catch (error) {
             console.error("Error fetching notifications:", error);

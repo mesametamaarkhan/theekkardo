@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Clock, MapPin, Car, Loader2, DollarSign, X } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const MechanicRequestsPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ const MechanicRequestsPage = () => {
         const fetchRequests = async () => {
             setLoading(true);
             try {
-                const res = await axios.get('http://localhost:5000/service-request/', { withCredentials: true});
+                const res = await axios.get(`${API_BASE_URL}/service-request/`, { withCredentials: true});
                 if(res.status === 200) {
                     setRequests(res.data.serviceRequests);
                 }
@@ -69,7 +71,7 @@ const MechanicRequestsPage = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:5000/service-request/place-bid', { serviceRequestId: selectedRequest._id, bidAmount, message }, { withCredentials: true });
+            const res = await axios.post(`${API_BASE_URL}/service-request/place-bid`, { serviceRequestId: selectedRequest._id, bidAmount, message }, { withCredentials: true });
             
             if(res.status === 200) {
                 toast.success('Bid placed successfully!');

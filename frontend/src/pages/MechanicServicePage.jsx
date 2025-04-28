@@ -6,6 +6,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import clsx from 'clsx';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const MechanicServicePage = () => {
     const { requestId } = useParams();
     const navigate = useNavigate();
@@ -22,7 +24,7 @@ const MechanicServicePage = () => {
         const fetchRequest = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:5000/service-request/${requestId}`, { withCredentials: true });
+                const response = await axios.get(`${API_BASE_URL}/service-request/${requestId}`, { withCredentials: true });
                 setRequest(response.data.serviceRequest);
             } catch (error) {
                 console.error(error);
@@ -39,7 +41,7 @@ const MechanicServicePage = () => {
         setLoading(true);
         try {
             const response = await axios.put(
-                `http://localhost:5000/service-request/update-status/${requestId}`,
+                `${API_BASE_URL}/service-request/update-status/${requestId}`,
                 { status: 'in-progress' },
                 { withCredentials: true }
             );
@@ -58,7 +60,7 @@ const MechanicServicePage = () => {
         setLoading(true);
         try {
             const response = await axios.put(
-                `http://localhost:5000/service-request/update-status/${requestId}`,
+                `${API_BASE_URL}/service-request/update-status/${requestId}`,
                 { status: 'completed' },
                 { withCredentials: true }
             );
