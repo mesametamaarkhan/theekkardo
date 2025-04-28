@@ -85,10 +85,10 @@ router.post('/login', async (req, res) => {
             path: '/',
             httpOnly: true,
             secure: process.env.NODE_ENV === "production" ? true : false,
-            sameSite: 'None',
+            sameSite: 'Strict',
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
-        
+
         res.status(200).json({ message: 'Login Successful', user: { id: existingUser._id, email: existingUser.email, role: existingUser.role } })
     }
     catch (error) {

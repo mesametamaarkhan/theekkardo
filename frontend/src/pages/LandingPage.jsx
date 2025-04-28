@@ -66,19 +66,47 @@ const LandingPage = () => {
         const loggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
         setIsLoggedIn(loggedIn);
 
-        const getServices = () => {
-            axios.get(`${API_BASE_URL}/service`)
-                .then(response => {
-                    setServices(response.data.services);
-                })
-                .catch(error => {
-                    toast.error('Error fetching services');
-                    window.location.href('/login');
-                });
+        const getServices = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/service`);
+                setServices(response.data.services);
+            } catch (error) {
+                toast.error('Error fetching services');
+                window.location.href = '/login';
+            }
         };
 
         getServices();
     }, []);
+
+    const validateForm = () => {
+        if (serviceRequest.make.length < 2) {
+            toast.error('Vehicle Make must be at least 2 characters.');
+            return false;
+        }
+        if (serviceRequest.model.length < 2) {
+            toast.error('Vehicle Model must be at least 2 characters.');
+            return false;
+        }
+        if (!/^[A-Z0-9\s-]+$/.test(serviceRequest.plateNumber)) {
+            toast.error('Plate Number must contain only letters, numbers, spaces, or hyphens.');
+            return false;
+        }
+        if (!/^[-+]?\d*\.?\d+,\s*[-+]?\d*\.?\d+$/.test(userLocation)) {
+            toast.error('Location must be in latitude,longitude format.');
+            return false;
+        }
+        if (serviceRequest.issueDescription.length < 10) {
+            toast.error('Issue description must be at least 10 characters.');
+            return false;
+        }
+        const preferredTime = new Date(serviceRequest.preferredTime);
+        if (isNaN(preferredTime.getTime()) || preferredTime < new Date()) {
+            toast.error('Preferred time must be a valid future date/time.');
+            return false;
+        }
+        return true;
+    };
 
     const handleServiceRequest = (service) => {
         if (!isLoggedIn) {
@@ -87,7 +115,7 @@ const LandingPage = () => {
         }
         setSelectedService(service);
         setShowServiceModal(true);
-        
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -102,9 +130,7 @@ const LandingPage = () => {
 
     const handleSubmitRequest = async (e) => {
         e.preventDefault();
-
-        if (!userLocation) {
-            toast.error('Please allow location access or enter your location manually');
+        if (!validateForm()) {
             return;
         }
 
@@ -114,16 +140,8 @@ const LandingPage = () => {
 
             const response = await axios.post(`${API_BASE_URL}/service-request/`, {
                 serviceId: selectedService._id,
-                vehicle: {
-                    make: serviceRequest.make,
-                    model: serviceRequest.model,
-                    year: serviceRequest.year,
-                    plateNumber: serviceRequest.plateNumber,
-                },
-                location: {
-                    lat,
-                    lng
-                },
+                vehicle: { make: serviceRequest.make, model: serviceRequest.model, year: serviceRequest.year, plateNumber: serviceRequest.plateNumber },
+                location: { lat, lng },
                 issueDescription: serviceRequest.issueDescription,
                 preferredTime: serviceRequest.preferredTime,
             }, { withCredentials: true });
@@ -131,16 +149,7 @@ const LandingPage = () => {
             if (response.status === 200) {
                 toast.success('Service request submitted successfully!');
                 setShowServiceModal(false);
-                setServiceRequest({
-                    make: '',
-                    model: '',
-                    year: new Date().getFullYear(),
-                    plateNumber: '',
-                    issueDescription: '',
-                    preferredTime: '',
-                });
-
-                // Navigate to the bids page with the service request ID
+                setServiceRequest({ make: '', model: '', year: new Date().getFullYear(), plateNumber: '', issueDescription: '', preferredTime: '' });
                 navigate(`/bids/${response.data.serviceRequest._id}`);
             }
         } catch (error) {
@@ -154,39 +163,18 @@ const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <Toaster position="top-right" />
             {/* Hero Section */}
             <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 py-32">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid md:grid-cols-2 gap-12 items-center">
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                                Your Trusted Partner for Vehicle Assistance
-                            </h1>
-                            <p className="text-blue-100 text-lg mb-8">
-                                Get instant access to verified mechanics and emergency services, anytime, anywhere.
-                            </p>
-                            <Link
-                                to="/signup"
-                                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-                            >
-                                Get Started
-                            </Link>
+                        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Your Trusted Partner for Vehicle Assistance</h1>
+                            <p className="text-blue-100 text-lg mb-8">Get instant access to verified mechanics and emergency services, anytime, anywhere.</p>
+                            <Link to="/signup" className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">Get Started</Link>
                         </motion.div>
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="hidden md:block"
-                        >
-                            <img
-                                src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1000&q=80"
-                                alt="Mechanic helping with car"
-                                className="rounded-lg shadow-xl"
-                            />
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="hidden md:block">
+                            <img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1000&q=80" alt="Mechanic helping with car" className="rounded-lg shadow-xl" />
                         </motion.div>
                     </div>
                 </div>
@@ -197,25 +185,13 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Services</h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto">
-                            Professional automotive services tailored to your needs. From emergency repairs to regular maintenance, we've got you covered.
-                        </p>
+                        <p className="text-gray-600 max-w-2xl mx-auto">Professional automotive services tailored to your needs. From emergency repairs to regular maintenance, we've got you covered.</p>
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
                         {services.map((service, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.2 }}
-                                className="relative group overflow-hidden rounded-xl"
-                            >
+                            <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.2 }} className="relative group overflow-hidden rounded-xl">
                                 <div className="absolute inset-0">
-                                    <img
-                                        src={service.image}
-                                        alt={service.name}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                    />
+                                    <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
                                 </div>
                                 <div className="relative p-8 h-[400px] flex flex-col">
@@ -223,12 +199,7 @@ const LandingPage = () => {
                                         <h3 className="text-2xl font-bold text-white mb-3">{service.name}</h3>
                                         <p className="text-gray-200">{service.description}</p>
                                     </div>
-                                    <button
-                                        onClick={() => handleServiceRequest(service)}
-                                        className="mt-6 inline-flex items-center justify-center px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:text-gray-900 transition-colors duration-200"
-                                    >
-                                        Request Service
-                                    </button>
+                                    <button onClick={() => handleServiceRequest(service)} className="mt-6 inline-flex items-center justify-center px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:text-gray-900 transition-colors duration-200">Request Service</button>
                                 </div>
                             </motion.div>
                         ))}

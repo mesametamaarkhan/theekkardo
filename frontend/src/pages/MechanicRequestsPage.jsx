@@ -26,24 +26,72 @@ const MechanicRequestsPage = () => {
             toast.error('Please login to access this page');
             navigate('/login');
         }
-        
+
         const fetchRequests = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`${API_BASE_URL}/service-request/`, { withCredentials: true});
-                if(res.status === 200) {
+                const res = await axios.get(`${API_BASE_URL}/service-request/`, { withCredentials: true });
+                if (res.status === 200) {
                     setRequests(res.data.serviceRequests);
                 }
             } catch (error) {
                 toast.error('Failed to fetch service requests');
-                console.log(error);
+                console.error(error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchRequests();
-    }, []);
+    }, [navigate]);
+
+    const validateBidForm = () => {
+        if (!bidAmount || parseFloat(bidAmount) <= 0) {
+            toast.error('Bid amount must be a positive number.');
+            return false;
+        }
+        if (!estimatedTime.trim() || estimatedTime.length < 1) {
+            toast.error('Please provide a valid estimated time.');
+            return false;
+        }
+        if (!message.trim() || message.length < 10) {
+            toast.error('Message must be at least 10 characters.');
+            return false;
+        }
+        return true;
+    };
+
+    const handlePlaceBid = (request) => {
+        setSelectedRequest(request);
+        setShowBidModal(true);
+    };
+
+    const handleSubmitBid = async (e) => {
+        e.preventDefault();
+        if (!validateBidForm()) return;
+
+        setLoading(true);
+        try {
+            const res = await axios.post(`${API_BASE_URL}/service-request/place-bid`, {
+                serviceRequestId: selectedRequest._id,
+                bidAmount,
+                message
+            }, { withCredentials: true });
+
+            if (res.status === 200) {
+                toast.success('Bid placed successfully!');
+                setShowBidModal(false);
+                setBidAmount('');
+                setEstimatedTime('');
+                setMessage('');
+            }
+        } catch (error) {
+            toast.error('Failed to place bid');
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const formatTimeAgo = (date) => {
         const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
@@ -60,41 +108,11 @@ const MechanicRequestsPage = () => {
         return Math.floor(seconds) + ' seconds ago';
     };
 
-    const handlePlaceBid = (request) => {
-        setSelectedRequest(request);
-        setShowBidModal(true);
-    };
-
-    const handleSubmitBid = async (e) => {
-        e.preventDefault();
-        if (!selectedRequest) return;
-
-        setLoading(true);
-        try {
-            const res = await axios.post(`${API_BASE_URL}/service-request/place-bid`, { serviceRequestId: selectedRequest._id, bidAmount, message }, { withCredentials: true });
-            
-            if(res.status === 200) {
-                toast.success('Bid placed successfully!');
-                setShowBidModal(false);
-                setBidAmount('');
-                setEstimatedTime('');
-                setMessage('');
-            }
-        } 
-        catch (error) {
-            toast.error('Failed to place bid');
-        } 
-        finally {
-            setLoading(false);
-        }
-    };
-
     const filteredRequests = showEmergencyOnly ? requests.filter(req => req.isEmergency) : requests;
-    
+
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <Toaster position="top-right" />
-
             <div className="max-w-4xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-2xl font-bold text-gray-900">Service Requests</h1>
@@ -136,8 +154,7 @@ const MechanicRequestsPage = () => {
                                             </h3>
                                             {request.isEmergency && (
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                    <AlertTriangle className="w-3 h-3 mr-1" />
-                                                    Emergency
+                                                    <AlertTriangle className="w-3 h-3 mr-1" /> Emergency
                                                 </span>
                                             )}
                                         </div>
@@ -145,12 +162,7 @@ const MechanicRequestsPage = () => {
                                         <div className="flex items-center space-x-4 text-sm text-gray-500">
                                             <div className="flex items-center">
                                                 <MapPin className="w-4 h-4 mr-1" />
-                                                <a
-                                                    href={`https://www.google.com/maps?q=${request.location.lat},${request.location.lng}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:underline"
-                                                >
+                                                <a href={`https://www.google.com/maps?q=${request.location.lat},${request.location.lng}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                     View Location
                                                 </a>
                                             </div>
@@ -200,9 +212,7 @@ const MechanicRequestsPage = () => {
 
                                 <form onSubmit={handleSubmitBid} className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Bid Amount ($)
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Bid Amount ($)</label>
                                         <input
                                             type="number"
                                             value={bidAmount}
@@ -212,11 +222,8 @@ const MechanicRequestsPage = () => {
                                             required
                                         />
                                     </div>
-
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Estimated Time
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Time</label>
                                         <input
                                             type="text"
                                             value={estimatedTime}
@@ -226,11 +233,8 @@ const MechanicRequestsPage = () => {
                                             required
                                         />
                                     </div>
-
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Message
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
                                         <textarea
                                             value={message}
                                             onChange={(e) => setMessage(e.target.value)}
@@ -240,11 +244,10 @@ const MechanicRequestsPage = () => {
                                             required
                                         />
                                     </div>
-
                                     <button
                                         type="submit"
-                                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                                         disabled={loading}
+                                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                                     >
                                         {loading ? 'Submitting...' : 'Submit Bid'}
                                     </button>
