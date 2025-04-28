@@ -87,7 +87,7 @@ const LandingPage = () => {
         }
         setSelectedService(service);
         setShowServiceModal(true);
-        // Get user's location
+        
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {

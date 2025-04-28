@@ -36,8 +36,8 @@ router.post('/', authenticateToken, async (req, res) => {
 //get all service requests
 router.get('/', authenticateToken, async (req, res) => {
     try {
-        const serviceRequests = await ServiceRequest.find()
-            .sort({ createdAt: -1 }); // 🔥 Sort newest first
+        const serviceRequests = await ServiceRequest.find({ status: 'pending' })
+            .sort({ createdAt: -1 }); 
         res.status(200).json({ serviceRequests });
     }
     catch (error) {
