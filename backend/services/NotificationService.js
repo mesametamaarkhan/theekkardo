@@ -13,7 +13,7 @@ export const notifyMechanicsAboutService = async (serviceDetails, userId) => {
         const payload = {
             notification: { title, body },
             data: {
-                click_action: "https://theekkardo.onrender.com/mechanic/requests",
+                click_action: "https://theekkardo.vercel.app/mechanic/requests",
                 type: 'service_request',
                 serviceId: serviceDetails._id.toString(),
             }
@@ -32,7 +32,7 @@ export const notifyMechanicsAboutService = async (serviceDetails, userId) => {
             body,
             recipientId: m._id,
             type: 'service_request',
-            linkToPage: "https://theekkardo.onrender.com/mechanic/requests"
+            linkToPage: "https://theekkardo.vercel.app/mechanic/requests"
         }));
 
         await Notification.insertMany(notifications);
@@ -53,7 +53,7 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
         const payload = {
             notification: { title, body },
             data: {
-                click_action: `https://theekkardo.onrender.com/bids/${bidDetails.serviceRequestId}`,
+                click_action: `https://theekkardo.vercel.app/bids/${bidDetails.serviceRequestId}`,
                 type: 'bid_received',
                 serviceId: bidDetails.serviceRequestId.toString(),
             }
@@ -72,7 +72,7 @@ export const notifyUsersAboutBid = async (bidDetails, mechanicId) => {
             body,
             recipientId: user._id,
             type: 'bid_received',
-            linkToPage: `https://theekkardo.onrender.com/bids/${bidDetails.serviceRequestId}`
+            linkToPage: `https://theekkardo.vercel.app/bids/${bidDetails.serviceRequestId}`
         }));
 
         await Notification.insertMany(notifications);
@@ -92,7 +92,7 @@ export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceReques
         const payload = {
             notification: { title, body },
             data: {
-                click_action: `https://theekkardo.onrender.com/mechanic/service/${serviceRequestDetails._id}`,
+                click_action: `https://theekkardo.vercel.app/mechanic/service/${serviceRequestDetails._id}`,
                 type: 'bid_accepted',
                 serviceId: serviceRequestDetails._id.toString(),
             }
@@ -109,7 +109,7 @@ export const notifyMechanicAboutBidAcceptance = async (bidDetails, serviceReques
             body,
             recipientId: mechanic._id,
             type: 'bid_accepted',
-            linkToPage: `https://theekkardo.onrender.com/mechanic/service/${serviceRequestDetails._id}`
+            linkToPage: `https://theekkardo.vercel.app/mechanic/service/${serviceRequestDetails._id}`
         };
 
         await Notification.insertOne(notification);
@@ -131,7 +131,7 @@ export const notifyUserAboutServiceStart = async (serviceRequestDetails) => {
         const payload = {
             notification: { title, body },
             data: {
-                click_action: `https://theekkardo.onrender.com/service/${serviceRequestDetails._id}`,
+                click_action: `https://theekkardo.vercel.app/service/${serviceRequestDetails._id}`,
                 type: 'service_started',
                 serviceId: serviceRequestDetails._id.toString(),
             }
@@ -148,7 +148,7 @@ export const notifyUserAboutServiceStart = async (serviceRequestDetails) => {
             body,
             recipientId: user._id,
             type: 'service_started',
-            linkToPage: `https://theekkardo.onrender.com/service/${serviceRequestDetails._id}`
+            linkToPage: `https://theekkardo.vercel.app/service/${serviceRequestDetails._id}`
         };
 
         await Notification.insertOne(notification);
@@ -170,7 +170,7 @@ export const notifyUserAboutServiceCompletion = async (serviceRequestDetails) =>
         const payload = {
             notification: { title, body },
             data: {
-                click_action: `https://theekkardo.onrender.com/service/${serviceRequestDetails._id}`,
+                click_action: `https://theekkardo.vercel.app/service/${serviceRequestDetails._id}`,
                 type: 'service_completed',
                 serviceId: serviceRequestDetails._id.toString(),
             }
@@ -187,7 +187,7 @@ export const notifyUserAboutServiceCompletion = async (serviceRequestDetails) =>
             body,
             recipientId: user._id,
             type: 'service_completed',
-            linkToPage: `https://theekkardo.onrender.com/user/service/${serviceRequestDetails._id}`
+            linkToPage: `https://theekkardo.vercel.app/user/service/${serviceRequestDetails._id}`
         };
 
         await Notification.insertOne(notification);
