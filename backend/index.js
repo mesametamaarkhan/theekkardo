@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors({
     origin: 'https://theekkardo.vercel.app',  // <-- allow deployed frontend
     credentials: true                         // <-- allow cookies
-  }));
+}));
 
 app.use('/admin', AdminRoutes);
 app.use('/user', UserRoutes);
