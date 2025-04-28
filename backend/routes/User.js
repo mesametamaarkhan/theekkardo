@@ -89,6 +89,7 @@ router.post('/login', async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
         console.log('Token:', token);
+        console.log('Cookie:', res.cookie.authToken);
         res.status(200).json({ message: 'Login Successful', user: { id: existingUser._id, email: existingUser.email, role: existingUser.role } })
     }
     catch (error) {
