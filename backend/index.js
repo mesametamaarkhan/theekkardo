@@ -11,9 +11,9 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173', "https://theekkardo.vercel.app"], 
-    credentials: true 
-}));
+    origin: 'https://theekkardo.vercel.app',  // <-- allow deployed frontend
+    credentials: true                         // <-- allow cookies
+  }));
 
 app.use('/admin', AdminRoutes);
 app.use('/user', UserRoutes);
