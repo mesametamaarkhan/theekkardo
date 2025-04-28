@@ -170,7 +170,7 @@ export const notifyUserAboutServiceCompletion = async (serviceRequestDetails) =>
         const payload = {
             notification: { title, body },
             data: {
-                click_action: `https://theekkardo.onrender.com/user/service/${serviceRequestDetails._id}`,
+                click_action: `https://theekkardo.onrender.com/service/${serviceRequestDetails._id}`,
                 type: 'service_completed',
                 serviceId: serviceRequestDetails._id.toString(),
             }
